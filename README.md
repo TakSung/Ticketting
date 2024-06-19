@@ -5,7 +5,7 @@
 ```bash
 git clone https://github.com/TakSung/Ticketting.git
 cd Ticketting
-pip install -r requirments.txt
+pip install -r requirements.txt
 ```
 
 # 할일
