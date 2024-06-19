@@ -8,4 +8,5 @@ requests==2.31.0
 
 # selenium
 selenium==4.9.0  
-webdriver-manager==4.0.1 
+webdriver-manager==4.0.1
+chromedriver_autoinstaller==0.6.4
