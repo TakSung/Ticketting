@@ -21,14 +21,15 @@ except:
     driver = webdriver.Chrome(f'./{chrome_ver}/chromedriver.exe', options=option)
 driver.implicitly_wait(10)
 #%%
-driver.get("https://tickets.interpark.com/contents/genre/concert")
+url = "https://time.navyism.com/?host=ticket.interpark.com"
+driver.get(url)
 
 # %%
-url = "https://time.navyism.com/?host=ticket.interpark.com"
-
-# Send a GET request to the website
-response = requests.get(url)
-
+new_time = driver.execute_script(
+    "return date('Y/m/d/H/i/s',time())"
+)
+print(new_time)
+# %%
 # Parse the HTML content using BeautifulSoup
 soup = bs(response.content, 'html.parser')
 
@@ -40,3 +41,7 @@ print(time_element)
 #server_time = time_element.text if time_element else "Time not found"
 #print("Interpark Server Time:", server_time)
 # %%
+new_time = driver.excute_script(
+    "return_date('Y/m/d/H/i/s',time())"
+)
+print(now_time)
