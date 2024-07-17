@@ -1,6 +1,7 @@
 #%%
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 import chromedriver_autoinstaller
 import subprocess
 import requests
@@ -24,7 +25,8 @@ except:
 driver.implicitly_wait(10)
 # %%
 # 인터파크로 들어가기
-driver.get("https://tickets.interpark.com/contents/genre/concert")
+driver.get("https://tickets.interpark.com/goods/24007623")
+time.sleep(1)
 driver.implicitly_wait(10)
 
 # %%
@@ -43,15 +45,32 @@ driver.implicitly_wait(10)
 # 타이머 확인 확인하기 - 타이머 사이트 접속
 url = "https://time.navyism.com/?host=ticket.interpark.com"
 driver.get(url)
+time.sleep(1)
+driver.implicitly_wait(10)
 
 # %%
 new_time = driver.execute_script(
     "return date('Y/m/d/H/i/s',time())"
 )
 print(new_time)
+type(new_time)
 
+#%%
+
+while True:
+    new_time = driver.execute_script(  
+    "return date('Y/m/d/H/i/s',time())"
+    )
+    print(new_time)
+    if new_time >= "2024/07/17/20/54/00":
+        break
+    else:
+        time.sleep(0.5)
+
+    
 # %%
-new_time = driver.excute_script(
-    "return_date('Y/m/d/H/i/s',time())"
-)
-print(now_time)
+driver.switch_to.window(driver.window_handles[0])
+time.sleep(1)
+driver.implicitly_wait(10)
+
+driver.find_element(By.XPATH, '//*[@id="productSide"]/div/div[2]/a[1]').click()
