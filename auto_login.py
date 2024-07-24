@@ -34,7 +34,7 @@ driver.implicitly_wait(10)
 # %%
 # 인터파크 들어가기
 
-driver.get(url='https://tickets.interpark.com/')
+driver.get(url='https://tickets.interpark.com/goods/24007623')
 time.sleep(1)
 driver.implicitly_wait(10)
 
@@ -42,37 +42,9 @@ driver.implicitly_wait(10)
 # driver.find_element(By.XPATH, '/html/body/div[1]/div/header/div[2]/div[1]/div/div[2]/a[1]').click()
 
 # %%
-# 검색해서 이동하기
-target_keyword = "두아 리파"
-search = driver.find_element(By.XPATH,'//*[@id="__next"]/div/header/div/div[1]/div/div[1]/div[3]/div/input')
-driver.implicitly_wait(10)
-search.send_keys(target_keyword)
-driver.implicitly_wait(10)
-search.send_keys(Keys.ENTER)
-driver.implicitly_wait(10)
-
-# %%
-# 첫번째 컨텐츠 들어가기
-contents = [r'//*[@id="contents"]/div/div/div[2]/div[2]/a[1]', r'//*[@id="contents"]/div/div/div[1]/div[2]/a', r'//*[@id="contents"]/div/div/div[2]/div[2]/a', ]
-target_content = contents[0]
-for link in contents:
-    target_content = link
-    print(target_content)
-    try:
-        temp = driver.find_element(By.XPATH, target_content)
-        driver.implicitly_wait(1)
-        print(temp)
-    except:
-        continue
-    break
-    
-driver.find_element(By.XPATH, target_content).click()
-driver.implicitly_wait(10)
-driver.switch_to.window(driver.window_handles[1])
-
-# %%
 # 좌석 예약 클릭하기
 driver.find_element(By.XPATH,'//*[@id="productSide"]/div/div[2]/a[1]').click()
+time.sleep(0.5)
 driver.implicitly_wait(10)
 
 # %%
@@ -111,20 +83,22 @@ while capchaPng:
 print('******************************select seat')
 driver.switch_to.window(driver.window_handles[-1])
 driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
+
+# %%
 # 구역선택
-#driver.find_element(By.XPATH,'//*[@id="GradeRow"]/td[1]/div/span[2]').click()
+driver.find_element(By.XPATH,'//*[@id="GradeRow"]/td[1]/div/span[2]').click()
+driver.implicitly_wait(10)
 
 # %%
 # 세부구역 선택
-# driver.find_element(By.XPATH,'//*[@id="GradeDetail"]/div/ul/li[1]/a').click()
-# driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeatDetail"]'))
-# try:
-#     driver.find_element(By.XPATH,'//*[@id="Seats"]').click()
-#     payment()
-#     break
-# except:
-#     print('******************************다시선택')
-#     driver.switch_to.default_content()
-#     driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
-#     driver.find_element(By.XPATH,'/html/body/form[1]/div/div[1]/div[3]/div/p/a/img').click()
-#     time.sleep(1)     
+driver.find_element(By.XPATH,'//*[@id="GradeDetail"]/div/ul/li[1]/a').click()
+driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeatDetail"]'))
+try:
+    driver.find_element(By.XPATH,'//*[@id="Seats"]').click()
+except:
+    print('******************************다시선택')
+    driver.switch_to.default_content()
+    driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
+    driver.find_element(By.XPATH,'/html/body/form[1]/div/div[1]/div[3]/div/p/a/img').click()
+    time.sleep(1)     
+# %%
