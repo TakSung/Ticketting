@@ -68,10 +68,10 @@ for link in contents:
     
 driver.find_element(By.XPATH, target_content).click()
 driver.implicitly_wait(10)
+driver.switch_to.window(driver.window_handles[1])
 
 # %%
 # 좌석 예약 클릭하기
-driver.switch_to.window(driver.window_handles[1])
 driver.find_element(By.XPATH,'//*[@id="productSide"]/div/div[2]/a[1]').click()
 driver.implicitly_wait(10)
 
