@@ -9,10 +9,13 @@ from bs4 import BeautifulSoup as bs
 from datetime import datetime
 import subprocess
 import time
+import easyocr
 # import pandas as pd
 # import requests
 #%%
 # 크롬 열기
+
+reader = easyocr.Reader(['en'])
 subprocess.Popen(r'C:\Program Files\Google\Chrome\Application\chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\chrometemp"') # 디버거 크롬 구동
 
 
@@ -40,15 +43,12 @@ driver.implicitly_wait(10)
 
 # %%
 # 검색해서 이동하기
-target_keyword = "엔젤스 인 아메리카 - 파트원:밀레니엄이 다가온다"
+target_keyword = "두아 리파"
 search = driver.find_element(By.XPATH,'//*[@id="__next"]/div/header/div/div[1]/div/div[1]/div[3]/div/input')
-time.sleep(1)
 driver.implicitly_wait(10)
-time.sleep(1)
 search.send_keys(target_keyword)
-time.sleep(1)
+driver.implicitly_wait(10)
 search.send_keys(Keys.ENTER)
-time.sleep(1)
 driver.implicitly_wait(10)
 
 # %%
@@ -60,7 +60,6 @@ for link in contents:
     print(target_content)
     try:
         temp = driver.find_element(By.XPATH, target_content)
-        # time.sleep(2)
         driver.implicitly_wait(1)
         print(temp)
     except:
@@ -72,73 +71,60 @@ driver.implicitly_wait(10)
 
 # %%
 # 좌석 예약 클릭하기
-print('--------------------')
-print(driver.window_handles)
-driver.switch_to.window(driver.window_handles[-1])
+driver.switch_to.window(driver.window_handles[1])
 driver.find_element(By.XPATH,'//*[@id="productSide"]/div/div[2]/a[1]').click()
-
-
-
-# %%
-# 타이머 확인 확인하기
-
-driver.execute_script('window.open("https://google.com");')
-time.sleep(1)
 driver.implicitly_wait(10)
 
-# 타이머 확인 확인하기 - 새로 열린 탭으로 전환
+# %%
+# 좌석 예약 창으로 변경
 driver.switch_to.window(driver.window_handles[-1])
-time.sleep(1)
-driver.implicitly_wait(10)
-
-# 타이머 확인 확인하기 - 타이머 사이트 접속
-url = "https://time.navyism.com/?host=ticket.interpark.com"
-# 시간 동기화 사이트로 이동
-driver.get(url)
+driver.switch_to.frame(driver.find_element(By.XPATH, "//*[@id='ifrmSeat']"))
 driver.implicitly_wait(10)
 
 # %%
-# 서버시간 가져오는 함수
-def get_server_time():
-    # 서버 시간을 가져오는 함수
-    time_element = driver.find_element(By.ID, "time_area")
-    driver.implicitly_wait(2)
-    # print(time_element.text)
-    server_time_str = time_element.text  # "2024년 06월 19일 21:39:54.123" 형태로 시간 추출
-    server_time = datetime.strptime(server_time_str.split(".")[0], "%Y년 %m월 %d일 %H시 %M분 %S초")
-    return server_time
+# 캡챠 풀기
+capchaPng = driver.find_element(By.XPATH,'//*[@id="imgCaptcha"]')
 
-def wait_for_target_time(target_time):
-    while True:
-        current_time = get_server_time()
-        # print(f"현재 서버 시간: {current_time.strftime("%Y년 %m월 %d일 %H시 %M분 %S초")}", end="\t")
-        # print(f"목표 서버 시간: {target_time.strftime("%Y년 %m월 %d일 %H시 %M분 %S초")}", end="\t")
-        # print((current_time >= target_time))
-        if current_time >= target_time:
-            break
-        time.sleep(1)  # 0.1초 간격으로 체크
-print(get_server_time())
+while capchaPng:
+    print('---------------capcha')
+    result = reader.readtext(capchaPng.screenshot_as_png, detail=0)
+    capchaValue = result[0].replace(' ', '').replace('5', 'S').replace('0', 'O').replace('$', 'S').replace(',', '')\
+        .replace(':', '').replace('.', '').replace('+', 'T').replace("'", '').replace('`', '')\
+        .replace('1', 'L').replace('e', 'Q').replace('3', 'S').replace('€', 'C').replace('{', '').replace('-', '')
+        
+    # 입력
+    driver.find_element(By.XPATH,'//*[@id="divRecaptcha"]/div[1]/div[3]').click()
+    chapchaText = driver.find_element(By.XPATH,'//*[@id="txtCaptcha"]')
+    chapchaText.send_keys(capchaValue)
+        
+    #입력완료 버튼 클릭
+    driver.find_element(By.XPATH,'//*[@id="divRecaptcha"]/div[1]/div[4]/a[2]').click()
+
+    display = driver.find_element(By.XPATH,'//*[@id="divRecaptcha"]').is_displayed()
+    if display:
+        # 새로고침
+        driver.find_element(By.XPATH,'//*[@id="divRecaptcha"]/div[1]/div[1]/a[1]').click()
+    else:
+        break
+# %%
+# 좌석 선택하기
+print('******************************select seat')
+driver.switch_to.window(driver.window_handles[-1])
+driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
+# 구역선택
+#driver.find_element(By.XPATH,'//*[@id="GradeRow"]/td[1]/div/span[2]').click()
 
 # %%
-# 목표 시간 설정 (예: 14:00:00)
-TARGET_TIME_STR = "2024년 07월 17일 20시 57분 58초"
-TARGET_TIME = datetime.strptime(TARGET_TIME_STR, "%Y년 %m월 %d일 %H시 %M분 %S초")
-wait_for_target_time(TARGET_TIME)
-
-# 목표 시간이 되면 팝업 띄우기
-# driver.execute_script('alert("목표 시간이 되었습니다!");')
-
-# # 팝업을 사용자가 확인할 때까지 대기
-# WebDriverWait(driver, 30).until(EC.alert_is_present())
-# alert = driver.switch_to.alert
-# alert.accept()
-
-print("목표 시간이 되었습니다!")
-# %%
-# 탭을 인터파크로 변경
-driver.switch_to.window(driver.window_handles[0])
-time.sleep(1)
-driver.implicitly_wait(10)
-driver.find_element(By.XPATH, "//*[@id="productSide"]/div/div[2]/a[1]").click()
-
-# %%
+# 세부구역 선택
+# driver.find_element(By.XPATH,'//*[@id="GradeDetail"]/div/ul/li[1]/a').click()
+# driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeatDetail"]'))
+# try:
+#     driver.find_element(By.XPATH,'//*[@id="Seats"]').click()
+#     payment()
+#     break
+# except:
+#     print('******************************다시선택')
+#     driver.switch_to.default_content()
+#     driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
+#     driver.find_element(By.XPATH,'/html/body/form[1]/div/div[1]/div[3]/div/p/a/img').click()
+#     time.sleep(1)     
