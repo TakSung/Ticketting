@@ -114,7 +114,13 @@ click_GradeDetail(li_num=1)
 ## 좌석선택하기
 # try:
 driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeatDetail"]'))
-#     driver.find_element(By.XPATH,'//*[@id="Seats"]').click()
+driver.implicitly_wait(10)
+driver.find_element(By.XPATH,'//*[@id="Seats"]').click()
+driver.implicitly_wait(10)
+driver.switch_to.default_content()
+driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
+driver.find_element(By.XPATH,'//*[@id="NextStepImage"]').click()
+driver.implicitly_wait(10)
 # except:
 #     print('******************************다시선택')
 #     driver.switch_to.default_content()

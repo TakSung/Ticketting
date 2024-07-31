@@ -1,1172 +1,1189 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ko" lang="ko"><head><meta http-equiv="origin-trial" content="A/kargTFyk8MR5ueravczef/wIlTkbVk1qXQesp39nV+xNECPdLBVeYffxrM8TmZT6RArWGQVCJ0LRivD7glcAUAAACQeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZS5jb206NDQzIiwiZmVhdHVyZSI6IkRpc2FibGVUaGlyZFBhcnR5U3RvcmFnZVBhcnRpdGlvbmluZzIiLCJleHBpcnkiOjE3NDIzNDIzOTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9">
+<html>
+
+<head>
     <title></title>
     <meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
-    <link rel="stylesheet" type="text/css" href="//ticketimage.interpark.com/TicketImage/onestop/css/reset.css">
-    <link rel="stylesheet" type="text/css" href="//ticketimage.interpark.com/TicketImage/onestop/css/style_20160628.css?v=201707083108">
-    <link rel="stylesheet" type="text/css" href="//ticketimage.interpark.com/TicketImage/onestop/css/style.css?v=202308181100">
-    <script type="text/javascript" async="" charset="utf-8" src="https://www.gstatic.com/recaptcha/releases/Xv-KF0LlBu_a0FJ9I5YSlX5m/recaptcha__ko.js" crossorigin="anonymous" integrity="sha384-7nBZQNj04a/36sy0+dfPuhi6lvXigXEftYYoPqK+yaNQu65qEIej7kvlS9pZ1NRd"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-0CGEBFW3VY&amp;l=dataLayer&amp;cx=c"></script><script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-P2W7X9K3"></script><script type="text/javascript" src="Book_GTM.js"></script> <!-- ITSERVICE-79731 -->
-    <script type="text/javascript" src="//ticketimage.interpark.com/TicketImage/onestop/css/jquery-1.6.2.min.js"></script>
+    <link rel="stylesheet" type="text/css"
+        href="//ticketimage.interpark.com/TicketImage/2015/20150807_common/common.css">
+    <script type="text/javascript"
+        src="//ticketimage.interpark.com/TicketImage/onestop/css/jquery-1.6.2.min.js"></script>
     <script type="text/javascript">jQuery.noConflict();</script>
     <script type="text/javascript" src="/Lib/js/ClientLog.js"></script>
-    <script type="text/javascript" src="//ticketimage.interpark.com/TicketImage/onestop/css/common.js"></script>
-    <script type="text/javascript" src="/Lib/js/XmlRs.js"></script>
     <script type="text/javascript" src="/Book/Inc/Js/common.js"></script>
-    <script type="text/javascript" src="/Book/Inc/Js/block.js"></script>
-    <script type="text/javascript" src="/Book/Inc/Js/prototype_1_7.js"></script>
-    <script type="text/javascript" src="/Book/Inc/Js/Ajax.js"></script>
-    <script type="text/javascript" src="/Book/Inc/Js/BookSeatConfig.js?v=20240711"></script>
     <script type="text/javascript">
-        var j$ = jQuery;
-        document.observe("dom:loaded", fnInit);
-    
-        var IsHanwhaCouple = false;
-        var IsFirstLoad = true;
-        var IsSeatLoading = false;
-        var TicketCnt_Max = 10;
-        var WaitingAlertMsg = "";
-        var CaptchaYN = "Y";
-        var goodsCode = "24007623";
-        var SID = "13EF6EE681514BF28058D011BB04826B";
-        var SelectAble = true;
-        var SelectBlock = "";
-    
-        function fnInit(){
-            parent.fnSetNowBookStep(2);
-            fnCallPlaySeqUpdate();
-            //fnInitBlock();
+        var OFFSETLEFT = 0;
+        var OFFSETTOP = 0;
+        var tempRow = 0;
+        var tempCol = 0;
+
+
+
+        function fnInit() {
+
         }
-        function fnBookReloadSession() {
-            top.location.href = "/Book/BookSession.asp?GroupCode=24007623&PlayDate=20241204&PlaySeq=001&BizCode=WEBBR&Tiki=N";
-            return;
-        }
-    
-        // 예매대기 아이콘 보이기
-        function fnViewWaiting(status){
-    
-            // 예매대기 상품 아님
-            if(status == "0"){
-                $("divWaiting").style.display = "none";
-                $("divWaiting1").style.display = "none";
-                $("divWaitingNotStart").style.display = "none";
-                $("divWaitingEnd").style.display = "none";
+
+
+
+        //일반 좌석선택
+        var FCCHZArr = [];
+        var FCCHZCnt = 0;
+        var FCCHZSelCnt = 0;
+        var FCSeatCnt = 0;
+        var FCSeatConfirm = false;
+        var TableArr = [];
+
+        function SelectSeat(me, SeatGrade, Floor, RowNo, SeatNo, Block, SeatGradeName) {
+            if (typeof me == "string") {
+                me = document.getElementById(me);
             }
-            // 예매대기 시작전
-            else if(status == "1"){
-                $("divWaiting").style.display = "none";
-                $("divWaiting1").style.display = "none";
-                $("divWaitingNotStart").style.display = "block";
-                $("divWaitingEnd").style.display = "none";
-    
-            }
-            // 예매대기 가능
-            else if(status == "2"){
-                $("divWaiting").style.display = "block";
-                $("divWaiting1").style.display = "block";
-                $("divWaitingNotStart").style.display = "none";
-                $("divWaitingEnd").style.display = "none";
-    
-            }
-            // 예매대기 종료
-            else if(status == "3"){
-                $("divWaiting").style.display = "none";
-                $("divWaiting1").style.display = "none";
-                $("divWaitingNotStart").style.display = "none";
-                $("divWaitingEnd").style.display = "block";
-    
-            }else{
-                $("divWaiting").style.display = "none";
-                $("divWaiting1").style.display = "none";
-                $("divWaitingNotStart").style.display = "none";
-                $("divWaitingEnd").style.display = "none";
+
+
+            //		for(i=0; i < parent.SeatBuffer.index; i++)
+            //		{
+            //			o = parent.SeatBuffer.Data[i];
+            //
+            //			if(o.SeatGrade != SeatGrade)
+            //			{
+            //				alert(o.SeatGradeName + "과 " + SeatGradeName + "을 동시에 선택하실 수 없습니다. 동일한 좌석등급으로 좌석을 선택해주세요");
+            //				return;
+            //			}
+            //		}
+
+
+            var SeatInfo = me.getAttribute("SeatInfo");
+            var RowIdx = me.getAttribute("RowIdx");
+            var ColIdx = me.getAttribute("ColIdx");
+
+            // 선택을 취소 하면 
+            if ("Y" == me.value) {
+
+                parent.fnSelectSeat("D", me, SeatGrade, Floor, RowNo, SeatNo, Block, SeatInfo);
+            } else {
+
+                parent.fnSelectSeat("A", me, SeatGrade, Floor, RowNo, SeatNo, Block, SeatInfo);
             }
         }
-    
-        function displayDateString(strDate, Type)
-        {
-            var ret;
-            if(strDate.length == 8)     {
-                if(Type == 1){
-                    ret = strDate.substring(0,4) + "." + strDate.substring(4,6) + "." + strDate.substring(6,8)
-                }else if(Type == 2){
-                    ret = strDate.substring(2,4) + "." + strDate.substring(4,6) + "." + strDate.substring(6,8)
-                }else{
-                    ret = strDate.substring(0,4) + "." + strDate.substring(4,6) + "." + strDate.substring(6,8)
-                }
-            }else if (strDate.length == 12){
-                if(strDate.substring(0,8) >= "20130710") {
-                    ret = day2(strDate.substring(4,6)) + "월 " + day2(strDate.substring(6,8)) + "일 08:00";
-                } else {
-                    ret = day2(strDate.substring(4,6)) + "월 " + day2(strDate.substring(6,8)) + "일 " + strDate.substring(8,10) + ":" + strDate.substring(10,12);
-                }
+
+        //티켓링크 좌석
+        function SelectSeatTKLink(me, SeatGrade, Block) {
+
+            if (typeof me == "string") {
+                me = document.getElementById(me);
             }
-            return ret;
-        }
-        function day2(s){
-            if(s.substring(0,1) == "0"){
-                return s.substring(1,2)
-            }else{
-                return s
-            }
-        }
-        // 예매대기 Alert 보이기
-        function fnWaitingAlert(){
-            if(WaitingAlertMsg == ""){
-                return;
-            }else{
-                alert(WaitingAlertMsg);
-            }
-        }
-        //이전화면
-        function fnCancel(){
-            fnInitSeat();
-            //아래 부분은 네비이동 완성되면 1단계 이동으로 대체해야 함.
-            parent.fnOpenBookDatatime();
-    /*
-            parent.fnSetNowBookStep(1);
-            //document.location.href = "null.html"; //좌석
-            //parent.$("ifrmSeat").contentWindow.location.href = "loading.html";
-            parent.$("divBookSeat").style.visibility = "hidden";
-            parent.$("ifrmSeat").contentWindow.location.href = "loading.html";
-            parent.$("divBookMain").style.display = "";
-    */
-        }
-        //다시선택
-        function fnRefresh(){
-            if (!IsSeatLoading){
-                IsSeatLoading = true;
-                setTimeout("fnUseSeatRefreshImg()", 2000);
-    
-                $("ifrmSeatDetail").contentWindow.location.reload();
-                fnInitSeat();
-            }
-        }
-    
-        function fnUseSeatRefreshImg(){
-            IsSeatLoading = false;
-        }
-    
-        function fnSetSelectAble(v){
-    
-            SelectAble = v;
-        }
-    
-        //선택완료
-        function fnSelect(){
-            if(SeatBuffer.index==0){
-                alert("좌석을 선택하세요.");
-                return;
-            }
-            if(IsHanwhaCouple){
-                if (SeatBuffer.index%2!= 0){
-                    alert("커플석은 짝수로 구입하셔야 합니다");
+
+            var SeatInfo = me.getAttribute("SeatInfo");
+            var selRowIdx = me.getAttribute("RowIdx");
+            var selColIdx = me.getAttribute("ColIdx");
+            var LimitCnt = me.getAttribute("LimitCnt");
+
+            if ("Y" == me.value) {
+            } else {
+                if (parseInt(LimitCnt) > parseInt(parent.TicketCnt_Max)) {
+                    alert("선택이 불가능한 죄석입니다.");
+                    return;
+                } else if (parseInt(parent.SeatBuffer.index) >= parseInt(parent.TicketCnt_Max) || (parseInt(parent.SeatBuffer.index) + parseInt(LimitCnt)) > parseInt(parent.TicketCnt_Max)) {
+                    alert("해당 좌석등급은 " + parent.TicketCnt_Max + "매까지 선택 가능합니다.");
                     return;
                 }
             }
-            if(CaptchaYN=="Y") {
-                var rcckYN = document.getElementById("rcckYN").value;
-                if(rcckYN!="Y") {
-                    capchaShowSeat();
-                    return;
-                }
-            }
-            if(SelectAble){
-                fnSetPointDiscount();
-            }
-        }
-    
-        function fnSetPointDiscount(){
-            SelectAble = false;
-                //선블럭킹 확인
-    
-            var SeatGrade = "";
-            var Floor = "";
-            var RowNo = "";
-            var SeatNo = "";
-    
-            for(i=0;i<SeatBuffer.index;i++){
-                o = SeatBuffer.pop(i);
-                SeatGrade = SeatGrade + "" + o.SeatGrade + "^";
-                Floor = Floor + "" + o.Floor + "^";
-                RowNo = RowNo + "" + o.RowNo + "^";
-                SeatNo = SeatNo + "" + o.SeatNo + "^";
-            }
-            $("frmInfo").Flag.value = "Blocking";
-            $("frmInfo").PlaySeq.value = $F("PlaySeq");
-            $("frmInfo").SeatCnt.value = SeatBuffer.index;
-            $("frmInfo").SeatGrade.value = SeatGrade;
-            $("frmInfo").Floor.value = Floor;
-            $("frmInfo").RowNo.value = RowNo;
-            $("frmInfo").SeatNo.value = SeatNo;
-            
-            $("frmInfo").submit();
-    
-        }
-    
-        //좌석 데이타 전달(최종 완료할때 이 함수로 온다)
-        function fnSetSeat(){
-    
-    
-    
-            // 관람일, 회차가 바뀐 경우 전달
-            if($F("PlayDate") != "20241204" || $F("PlaySeq") != "001"){
-                parent.fnSetBookDateTime($F("PlayDate"), $F("PlaySeq"), $("PlaySeq").options[$("PlaySeq").selectedIndex].text);
-            }
-    
-            parent.fnClearSeat();
-            for(i=0; i < SeatBuffer.index; i++){
-                o = SeatBuffer.pop(i);
-                parent.fnSetSeatElement(i, "", o.SeatGrade, "", "0", "", "", o.SeatGradeName, "", o.BlockNo, o.Floor, o.RowNo, o.SeatNo, "", o.SeatInfo);
-            }
-    
-            // 다음 단계 선택
-            parent.fnNextStep("C");
-    
-            //선택 좌석 후에 재 셋팅
-            if($F("PlaySeq") != "001"){
-                parent.fnUpdatePlaySeqOthers();
-            }
-            //$("ifrmSeatDetail").contentWindow.location.href = "http://ticket.interpark.com/Book/loading.html";
-        }
-    
-        // 같은 좌석등급 가져오는지 체크하기 (같은 좌석등급이면 true, 다른 좌석등급이면 false
-        function fnChkSeatGrade(){
-            var SeatGrade = SeatBuffer.pop(0).SeatGrade
-            for(i=0;i<SeatBuffer.index;i++){
-                if(SeatGrade != SeatBuffer.pop(i).SeatGrade)
-                    return false;
-            }
-            return true;
-        }
-    
-        //선택정보 관리
-        //좌석선택정보 초기화
-        function fnInitSeat(){
-            SeatBuffer.clear();
-            for(i=0; i<GradeBuffer.index; i++){
-                GradeBuffer.Data[i].MyCnt = 0;
-            }
-            fnMySeatUpdate();
-            fnSetSelectAble(true);
-        }
-    
-        //등급버퍼 및 좌석 선택 정보 초기화
-        function fnInitGrade(){
-            GradeBuffer.clear();
-            fnInitSeat();
-            fnGetMaxTicket();
-        }
-    
-        function fnGetMaxTicket(){
-            var url = "/Book/Lib/BookInfoXml.asp?Flag=MaxTicket&GoodsCode=24007623&PlaceCode=24000640&BizCode=WEBBR&PlaySeq=" + $F("PlaySeq");
-            fnAjaxRequest(url, fnGetMaxTicketCallBack);
-        }
-        function fnGetMaxTicketCallBack(request){
-            if(request.readyState == 4){
-                if(request.status == 200){
-                    var Rs = new XmlRs(request.responseXML);
-    
-                    if(!Rs.Eof()){
-                        TicketCnt_Max = Rs.Get("TicketCnt_Max");
-    
-                        var WaitingStatus = Rs.Get("WaitingStatus")
-    
-                        // 예매대기 상품 아님
-                        if(WaitingStatus == "0"){
-                            WaitingAlertMsg = "";
-                            fnViewWaiting(WaitingStatus);
-                        }
-                        // 예매대기 오픈 이전
-                        else if(WaitingStatus == "1"){
-                            WaitingAlertMsg = "본 회차는 " + displayDateString(Rs.Get("WaitableTime"), 12) + " 예매대기서비스를 이용하실 수 있습니다.";
-                            fnViewWaiting(WaitingStatus);
-                        }
-                        // 예매대기 가능
-                        else if(WaitingStatus == "2"){
-                            WaitingAlertMsg = "";
-                            fnViewWaiting(WaitingStatus);
-                        }
-                        // 예매대기 종료
-                        else if(WaitingStatus == "3"){
-                            WaitingAlertMsg = "예매대기서비스 이용기간이 지났습니다.\n예매대기서비스는 관람일 3일전까지 이용 가능합니다.";
-                            fnViewWaiting(WaitingStatus);
-                        }else{
-                            WaitingAlertMsg = "";
-                            fnViewWaiting("0");
-                        }
-                    }else{
-                        TicketCnt_Max = 10;
-                    }
-    
-                    //현대카드 앱카드할인 Bizcode는 Max 2매 제한 (2014-03-20)
-                    if( "WEBBR" == "21846" && ("24007623" == "14002821" || "24007623" == "14002782" || "24007623" == "S0006756")) {
-                        if(TicketCnt_Max >2) {
-                            TicketCnt_Max = 2;
+
+            if (LimitCnt > 0) {
+                var objSeats = $N("Seats");
+                var SeatsCnt = objSeats.length;
+                var selSeatsCnt = 0;
+
+                for (var i = 0; i < LimitCnt; i++) {
+                    if (selSeatsCnt <= LimitCnt) {
+                        var ret = SelectSeatTKLinkSeat(objSeats, SeatGrade, Block, selRowIdx, parseInt(selColIdx) + i);
+                        if (ret == 1) {
+                            selSeatsCnt++;
+                        } else {
+                            break;
                         }
                     }
-    
                 }
-            }
-        }
-    
-    </script>
-    <script type="text/javascript" src="/Book/Inc/Js/Buffer.js?v=20130529"></script>
-    <script type="text/javascript">
-        //BookSeat
-        function fnHttpRead(url){
-            $("ifrmInfo").contentWindow.location.href = url;
-        }
-    
-        //선택된 좌석 표시
-        function fnMySeatUpdate(){
-            //좌석상세정보
-            var str = "";
-            str += "<table class=\"seat2\">";
-            str += "<colgroup><col width=\"75px\" /><col width=\"*\" /></colgroup>";
-            str += "<tbody>";
-            for(i=0; i<SeatBuffer.index; i++){
-                o = SeatBuffer.pop(i);
-                str += "<tr>";
-                str += "    <th><span>" + o.SeatGradeName + "</span></th>";
-                if (o.SeatInfo == ""){
-                    str += "    <td>" + o.Floor + " " + o.RowNo + " " + o.SeatNo + "</td>";
-                }else{
-                    str += "    <td>" + o.SeatInfo + "</td>";
-                }
-                str += "</tr>";
-            }
-            str += "</tbody>";
-            str += "</table>";
-    
-            $("SelectedSeat").innerHTML = str;
-    
-            //좌석갯수
-            $("SelectedSeatCount").innerHTML = SeatBuffer.index;
-    
-            //좌석선택완료 이미지 변경
-            if (eval(SeatBuffer.index) > 0){
-                $("NextStepImage").src = "http://ticketimage.interpark.com/TicketImage/onestop/btn_seat_confirm_on.gif";
-            }else{
-                $("NextStepImage").src = "http://ticketimage.interpark.com/TicketImage/onestop/btn_seat_confirm.gif";
-            }
-        }
-    
-        //PlaySeq Collection을 변경한다.
-        function fnCallPlaySeqUpdate(){
-            //PlaySeq를 초기화한다.
-            var c = $("PlaySeq");
-            for(i=c.options.length-1; i>-1; i--){
-                c.options[i] = null;
-            }
-    
-            var o = document.createElement("option");
-            o.value = "";
-            o.innerHTML = "선택하세요!";
-            o.text = o.innerHTML;
-            c.appendChild(o);
-    
-            var url = "/Book/Lib/BookInfoXml.asp?Flag=SeatPlaySeq&GoodsCode=24007623&PlaceCode=24000640&BizCode=WEBBR&PlayDate=" + $F("PlayDate") + "&OnlyDeliver=68001&DBDay=12&ExpressDelyDay=0&SessionID=13EF6EE681514BF28058D011BB04826B";
-            XmlRequest(url, fnPlaySeqUpdateCallBack);
-    
-    
-            if($("ifrmSeatView")){
-                $("ifrmSeatView").focus();
-            }
-        }
-        function fnPlaySeqUpdateCallBack(){
-            if(XmlHttp.readyState == 4){
-                if(XmlHttp.status == 200){
-                    var Rs = new XmlRs(XmlHttp.responseXML);
-                    while(!Rs.Eof()){
-                        fnAddPlaySeq(Rs.Get("PlaySeq"), Rs.Get("PlayTime"));
-                        Rs.MoveNext();
-                    }
-                    fnCallSeatPriceUpdate();
-                }
-            }
-        }
-    
-        //PlaySeq Collection을 추가한다.
-        function fnAddPlaySeq(PlaySeq, PlayTime){
-            var o = document.createElement("option");
-    
-            o.value = PlaySeq;
-            o.innerHTML = PlayTime;
-            o.text = o.innerHTML;
-    
-            if(PlaySeq == "001" && IsFirstLoad){
-                o.selected = true;
-                IsFirstLoad = false;
-            }
-            $("PlaySeq").appendChild(o);
-        }
-    
-        //등급별 좌석정보 및 일반가격 조회 요청(우측 기본가격 및 잔여석)
-        function fnCallSeatPriceUpdate(){
-            fnInitGrade();
-            var url = "/Book/Lib/BookInfoXml.asp?Flag=OrderSeatGrade&GoodsCode=24007623&PlaceCode=24000640&BizCode=WEBBR&PlaySeq=" + $F("PlaySeq") + "&SessionId=13EF6EE681514BF28058D011BB04826B&InterlockingGoods=";
-            XmlRequest(url, fnSeatPriceUpdateCallBack);
-        }
-    
-        function fnSeatPriceUpdateCallBack(){
-    
-            //HTML
-            if(XmlHttp.readyState == 4){
-                if(XmlHttp.status == 200){
-                    var Rs = new XmlRs(XmlHttp.responseXML);
-                    var i = 1;
-                    var SeatGradeHtml = "";
-    
-                    SeatGradeHtml += "<div class=\"wrapList\">";
-                    SeatGradeHtml += "<table>";
-                    SeatGradeHtml += "<colgroup>";
-                    SeatGradeHtml += "<col width=\"65%\" />";
-                    SeatGradeHtml += "<col width=\"*\" />";
-                    SeatGradeHtml += "</colgroup>";
-    
-                    SeatGradeHtml += "<tr id=\"GradeRow\" name=\"GradeRow\"><td colspan=\"2\" id=\"GradeDetail\" name=\"GradeDetail\"></td></tr>";
-    
-                    while(!Rs.Eof()){
-                        SeatGradeHtml += "<tr id=\"GradeRow\" name=\"GradeRow\">";
-    
-                        // 잔여석 비노출 상품일 경우, 좌석단계-좌석등급/잔여석 영역 잔여석 비노출
-                        if(Rs.Get("IsSeatCntView") == "N")
-                        {
-                                SeatGradeHtml += "<td><div><span class=\"lv\" style=\"background:" + fnSeat_Bg_Color(Rs.Get("SeatGrade"), "24000640") + ";\"></span><span class=\"select\" onclick=\"fnSwapGrade(" + i + ");\"><strong>" + Rs.Get("SeatGradeName") + "</strong></span></div></td>";
+                var remainSeatCnt = LimitCnt - selSeatsCnt;
+
+                for (var i = 1; i <= remainSeatCnt; i++) {
+                    if (selSeatsCnt <= LimitCnt) {
+                        var ret = SelectSeatTKLinkSeat(objSeats, SeatGrade, Block, selRowIdx, parseInt(selColIdx) - i);
+                        if (ret == 1) {
+                            selSeatsCnt++;
+                        } else {
+                            break;
                         }
-                        else
-                        {
-                            
-                                SeatGradeHtml += "<td><div><span class=\"lv\" style=\"background:" + fnSeat_Bg_Color(Rs.Get("SeatGrade"), "24000640") + ";\"></span><span class=\"select\" onclick=\"fnSwapGrade(" + i + ");\"><strong>" + Rs.Get("SeatGradeName") + "</strong> " + fnAddComma(Rs.Get("RemainCnt")) + "석</span></div></td>";
-                            
-                        }
-    
-                        SeatGradeHtml += "<td class=\"taR\">" + fnAddComma(Rs.Get("SalesPrice")) + "원</td>";
-                        SeatGradeHtml += "</tr>";
-                        SeatGradeHtml += "<tr><td colspan=\"2\" id=\"GradeDetail\" name=\"GradeDetail\" SeatGrade=\"" + Rs.Get("SeatGrade") + "\" SeatGradeName=\"" + Rs.Get("SeatGradeName") + "\" SalesPrice=\"" + fnAddComma(Rs.Get("SalesPrice")) + "\" RemainCnt=\"" + fnAddComma(Rs.Get("RemainCnt")) + "\" style=\"display:none;\"></td></tr>";
-    
-                        fnAddGrade(Rs.Get("SeatGrade"), Rs.Get("SeatGradeName"), Rs.Get("SalesPrice"), Rs.Get("RemainCnt"));
-                        Rs.MoveNext();
-                        i++;
                     }
-                    SeatGradeHtml += "</table>";
-                    SeatGradeHtml += "</div>";
-                    $("SeatGradeInfo").innerHTML = SeatGradeHtml;
-                    fnSeatUpdate();
                 }
             }
-    
         }
-    
-        //등급별 좌석정보 및 일반가격 화면 변경(우측 기본가격 및 잔여석)
-        function fnSeatPriceUpdate(str){
-            fnWriteHtmlDocument(str, ifrmSeatPrice);
+
+        function SelectSeatTKLinkSeat(objSeats, SeatGrade, Block, RowIdx, ColIdx) {
+            var SeatsCnt = objSeats.length;
+            var SelectedCnt = 0;
+            for (var i = 0; i < SeatsCnt; i++) {
+                var nowRowIdx = objSeats[i].getAttribute("RowIdx");
+                var nowColIdx = objSeats[i].getAttribute("ColIdx");
+                if (RowIdx == nowRowIdx && ColIdx == nowColIdx) {
+                    SelectSeat(objSeats[i], SeatGrade, objSeats[i].getAttribute("Floor"), objSeats[i].getAttribute("RowNo"), objSeats[i].getAttribute("SeatNo"), Block);
+                    SelectedCnt = 1;
+                    break;
+                }
+            }
+
+            return SelectedCnt;
         }
-    
-        //가격등급 상세조회용(Html 버전에서만 사용, 블럭 리스트 표시)
-        function fnSwapGrade(idx){
-    
-            /* Html 버전에서 좌석등급 클릭시 좌측 좌석도면(RGN000) 재로딩 안하는 정책결정.(2018-07-11)
-            $("ifrmSeatDetail").contentWindow.location.href = "/Book/BookSeatDetail.asp?GoodsCode=24007623&PlaceCode=24000640&TmgsOrNot=D2003&LocOfImage=24000640.gif&Tiki=N&PlaySeq=" + $F("PlaySeq") + "&SessionId=13EF6EE681514BF28058D011BB04826B&GoodsBizCode=29283";
+
+        //파크콘서트 좌석선택
+        function SelectSeat_ParkConcert(me, SeatGrade, Floor, RowNo, SeatNo, Block) {
+
+            if (typeof me == "string") {
+                me = document.getElementById(me);
+            }
+
+            var nSeatID = Floor + RowNo;
+            var selRowNo = RowNo;
+            var selSeatNo = SeatNo;
+            var LimitCnt = parent.TicketCnt_Max;
+
+
+            /*
+            if (SeatGrade == "3"){	
+                LimitCnt = 4;
+            }else if (SeatGrade == "4"){
+                LimitCnt = 2;
+            }
             */
-    
-            fnInitSeat();
-    
-            var r = $N("GradeRow");
-            var o = $N("GradeDetail");
-            //var e = $("ifrmSeatPrice").document.getElementsByName("expand");
-    
-            if(o[idx].style.display == "none"){
-                if(o[idx].innerHTML == ""){
-                    fnCallSeatGradeDetailUpdate(idx, o[idx].getAttribute("SeatGrade"));
-                }
-                for(i=0; i < r.length; i++){
-                    r[i].className = "";
-                    r[i].style.backgroundColor = "";
-                }
-                for(i=0; i<o.length; i++){
-                    o[i].style.display = "none";
-                }
-                //for(i=0;i<e.length;i++){
-                //  e[i].innerHTML = "<img src='http://ticketimage.interpark.com/TicketImage/event/061227/new_s_arrow_01.gif'>";
-                //}
-                r[idx].className = "selected";
-                o[idx].style.display = "";
-    
-                //e[idx].innerHTML = "<img src='http://ticketimage.interpark.com/TicketImage/event/061227/new_s_arrow_02.gif'>";
-            }else{
-                r[idx].className = "";
-                o[idx].style.display = "none";
-                //e[idx].innerHTML = "<img src='http://ticketimage.interpark.com/TicketImage/event/061227/new_s_arrow_01.gif'>";
-            }
-        }
-    
-        //가격등급 블럭 리스트 정보 조회
-        var SeatGradeIdx = 0;
-        function fnCallSeatGradeDetailUpdate(idx, s){
-            SeatGradeIdx = idx;
-            var url = "/Book/Lib/BookInfoXml.asp?Flag=SeatGradeBlock&GoodsCode=24007623&PlaceCode=24000640&Tiki=N&BizCode=WEBBR&PlaySeq=" + $F("PlaySeq") + "&SeatGrade=" + s + "&SeatGradeIdx=" + idx +"&TmgsOrNot=D2003";
-            XmlRequest(url, fnSeatGradeDetailUpdateCallBack);
-        }
-        function fnSeatGradeDetailUpdateCallBack(){
-            if(XmlHttp.readyState == 4){
-                if(XmlHttp.status == 200){
-                    var Rs = new XmlRs(XmlHttp.responseXML);
-    
-                    var SeatGradeHtml = "";
-                    SeatGradeHtml = "<div class=\"box\"><ul>"
-    
-                    while(!Rs.Eof()){
-                        // 잔여석 비노출 상품일 경우, 좌석단계-좌석등급/잔여석 영역 잔여석 비노출 (IsSeatCntView : N)
-                        if(Rs.Get("IsSeatCntView") == "N")
-                        {
-                                SeatGradeHtml += "<li><a href=\"javascript:fnBlockSeatUpdate('', '', '" + Rs.Get("SelfDefineBlock") + "')\">" + Rs.Get("SelfDefineBlock").replace("RGN","") + "영역</a></li>";
+
+            if ("Y" == me.value) {
+            } else {
+                if (parseInt(LimitCnt) > parseInt(parent.TicketCnt_Max)) {
+                    alert("선택이 불가능한 죄석입니다.");
+                    return;
+                } else if (parseInt(parent.SeatBuffer.index) >= parseInt(parent.TicketCnt_Max) || (parseInt(parent.SeatBuffer.index) + parseInt(LimitCnt)) > parseInt(parent.TicketCnt_Max)) {
+                    alert("해당 좌석등급은 " + parent.TicketCnt_Max + "매까지 선택 가능합니다.");
+                    return;
+                } else if (parseInt(parent.SeatBuffer.index) >= parseInt(LimitCnt)) {
+                    alert("해당 좌석등급은 " + LimitCnt + "매까지 선택 가능합니다.");
+                    return;
+                } else {
+                    for (i = 0; i < parent.SeatBuffer.index; i++) {
+                        o = parent.SeatBuffer.Data[i];
+                        if (o.SeatGrade != SeatGrade) {
+                            alert("패밀리석 또는 커플석은 다른 좌석등급과 혼합하여 구매하실 수 없습니다. 다시 선택해주세요..");
+                            return;
                         }
-                        else
-                        {
-                            if(Rs.Get("RemainCnt") == Rs.Get("TotalRemainCnt")){
-                                SeatGradeHtml += "<li><a href=\"javascript:fnBlockSeatUpdate('', '', '" + Rs.Get("SelfDefineBlock") + "')\">" + Rs.Get("SelfDefineBlock").replace("RGN","") + "영역</a> (" + Rs.Get("RemainCnt") + "석)</li>";
-                            }else{
-                                SeatGradeHtml += "<li><a href=\"javascript:fnBlockSeatUpdate('', '', '" + Rs.Get("SelfDefineBlock") + "')\">" + Rs.Get("SelfDefineBlock").replace("RGN","") + "영역</a> (" + Rs.Get("RemainCnt") + "석/ 총" + Rs.Get("TotalRemainCnt") + "석)</li>";
-                            }
-                        }
-                        Rs.MoveNext();
                     }
-                    SeatGradeHtml += "</ul></div>";
-    
-                    $N("GradeDetail")[SeatGradeIdx].innerHTML = SeatGradeHtml;
                 }
             }
-        }
-    
-        //가격등급 블럭 리스트 정보 표시
-        function fnSeatPriceDetailUpdate(idx, str){
-            $N("GradeDetail")[idx].innerHTML = str;
-        }
-    
-        //좌석 블럭 조회
-        function fnBlockSeatUpdate(SeatGrade, SeatGradeName, Block){
-            SelectBlock = Block;
-            fnInitSeat();
-            //$("ifrmSeatDetail").contentWindow.location.href = "http://ticket.interpark.com/Book/loading.html";
-    
-            var url = "";
-            var seatCheckCnt = 0;
-    
-            for(i=0;i<BlockBuffer.index;i++){
-                o = BlockBuffer.pop(i);
-                if(o.equal(Block)){
-                    seatCheckCnt += parseInt(o.RemainCnt.replace(",",""));
+
+            if (LimitCnt > 0) {
+                var objSeats = $N(nSeatID);
+                var SeatsCnt = objSeats.length;
+                var selSeatsCnt = 0;
+
+                for (var i = 0; i < LimitCnt; i++) {
+                    if (selSeatsCnt <= LimitCnt) {
+                        var ret = SelectSeat_ParkConcertAttached(objSeats, SeatGrade, Block, selRowNo, parseInt(selSeatNo) + i);
+                        if (ret == 1) {
+                            selSeatsCnt++;
+                        } else {
+                            break;
+                        }
+                    }
                 }
-            }
-    
-            url = "/Book/BookSeatDetail.asp";
-            url += "?GoodsCode=24007623&PlaceCode=24000640&PlaySeq=" + $F("PlaySeq");
-            url += "&SeatGrade=" + SeatGrade;
-            url += "&Block=" + Block;
-            url += "&TmgsOrNot=D2003";
-            url += "&LocOfImage=24000640.gif";
-            url += "&Tiki=N";
-            url += "&UILock=Y";
-            url += "&SessionId=13EF6EE681514BF28058D011BB04826B";
-            url += "&BizCode=WEBBR";
-            url += "&GoodsBizCode=29283";
-            url += "&SeatCheckCnt=" + seatCheckCnt;
-            url += "&InterlockingGoods=";
-    
-    
-            $("ifrmSeatDetail").contentWindow.location.href = url;
-        }
-    
-        //GradeBuffer Collection 추가
-        function fnAddGrade(SeatGrade, SeatGradeName, SalesPrice, RemainCnt){
-            GradeBuffer.put(new Grade(SeatGrade, SeatGradeName, SalesPrice, RemainCnt));
-        }
-    
-        //BlockBuffer Collection 추가
-        function fnAddBlock(v1, v2, v3, v4){
-            BlockBuffer.put(new SeatBlock(v1, v2, v3, v4));
-        }
-    
-        //BlockBuffer 정보 요청
-        function fnBlockUpdate(){
-            BlockBuffer.clear();
-            var url = "/Book/Lib/BookInfoXml.asp?Flag=AllBlock&GoodsCode=24007623&PlaceCode=24000640&PlaySeq=" + $F("PlaySeq") + "&Tiki=N&TmgsOrNot=D2003&SessionId=13EF6EE681514BF28058D011BB04826B";
-            XmlRequest(url, fnBlockUpdateCallBack);
-        }
-        function fnBlockUpdateCallBack(){
-            if(XmlHttp.readyState == 4){
-                if(XmlHttp.status == 200){
-                    var Rs = new XmlRs(XmlHttp.responseXML);
-    
-                    while(!Rs.Eof()){
-                        fnAddBlock(Rs.Get("SelfDefineBlock"), Rs.Get("SeatGrade"), Rs.Get("SeatGradeName"), fnAddComma(Rs.Get("RemainCnt")));
-                        Rs.MoveNext();
+                var remainSeatCnt = LimitCnt - selSeatsCnt;
+
+                for (var i = 1; i <= remainSeatCnt; i++) {
+                    if (selSeatsCnt <= LimitCnt) {
+                        var ret = SelectSeat_ParkConcertAttached(objSeats, SeatGrade, Block, selRowNo, parseInt(selSeatNo) - i);
+                        if (ret == 1) {
+                            selSeatsCnt++;
+                        } else {
+                            break;
+                        }
                     }
                 }
             }
         }
-    
-        //좌석 화면 로드
-        function fnSeatUpdate(){
-    
-            $("ifrmSeatDetail").contentWindow.location.href = "/Book/BookSeatDetail.asp?GoodsCode=24007623&PlaceCode=24000640&TmgsOrNot=D2003&LocOfImage=24000640.gif&Tiki=N&BizCode=WEBBR&PlaySeq=" + $F("PlaySeq") + "&SessionId=13EF6EE681514BF28058D011BB04826B&GoodsBizCode=29283&Block=RGN000&InterlockingGoods=";
-    
-    
-            //블럭정보 요청
-            fnBlockUpdate();
-        }
-    
-        //블럭 정보 조회
-        function fnGetBlockInfo(Block){
-            var o;
-            var str = "";
-            for(i=0;i<BlockBuffer.index;i++){
-                o = BlockBuffer.pop(i);
-                if(o.equal(Block)){
-                    // 잔여석 비노출 상품 처리(isSeatCntView : N)
-                    
-                        if(str==""){
-                                str = Block + "영역\n[" + o.SeatGradeName + "]";
-                        }else{
-                            str = str + "\n" + "[" + o.SeatGradeName + "]";
-                        }
-                    
-    
-                    // 잔여석 노출 상품만 잔여석 노출(isSeatCntView : Y)
-                    
-                            str = str + " " + o.RemainCnt + "석";
-                    
+
+        //파크콘서트 연석찾기
+        function SelectSeat_ParkConcertAttached(objSeats, SeatGrade, Block, RowNo, SeatNo) {
+            var SeatsCnt = objSeats.length;
+            var SelectedCnt = 0;
+
+            for (var i = 0; i < SeatsCnt; i++) {
+                var nowRowNo = objSeats[i].getAttribute("RowNo");
+                var nowSeatNo = objSeats[i].getAttribute("SeatNo");
+
+                if (fnTrim(RowNo) == fnTrim(nowRowNo) && SeatNo == nowSeatNo) {
+                    SelectSeat(objSeats[i], SeatGrade, objSeats[i].getAttribute("Floor"), nowRowNo, nowSeatNo, Block);
+                    SelectedCnt = 1;
+                    break;
                 }
             }
-    
-            if(str == ""){
-                // 잔여석 노출 상품만 잔여석 노출(isSeatCntView : Y)
-                
-                            str = Block + "영역\n[잔여석] 0석";
-                
-                        }
-                
-    
-            return str;
+
+            return SelectedCnt;
         }
-    
-        //좌석 선택
-        function fnAddSeat(SeatGrade, Floor, RowNo, SeatNo, Block, SeatInfo){
-            //alert(SeatBuffer.index);
-            if(SeatBuffer.index < TicketCnt_Max){
-                //좌석 버퍼에 좌석 추가
-                SeatBuffer.put(new Seat(SeatGrade, Floor, RowNo, SeatNo, Block, SeatInfo));
-                //등급 버퍼에 좌석수 변경
-                o = GradeBuffer.pop(GradeBuffer.search(SeatGrade));
-                ++o.MyCnt;
-                //화면변경
-                fnMySeatUpdate();
-                return true;
-            }else{
-                
-                    alert("선택 가능한 좌석 지정을 초과했습니다.");
-                
-    
-                return false;
+
+        //블럭선택	
+        function GetBlockSeatList(SeatGrade, SeatGradeName, Block) {
+            if ("001" == "") {
+                alert("관람시간을 먼저 선택해주세요");
+            } else {
+                parent.fnBlockSeatUpdate(SeatGrade, SeatGradeName, Block);
             }
         }
-    
-        //좌석 선택 취소
-        function fnRemoveSeat(SeatGrade, Floor, RowNo, SeatNo, Block, SeatInfo){
-            //좌석 버퍼에서 좌석 제거
-            SeatBuffer.remove(SeatBuffer.search(new Seat(SeatGrade, Floor, RowNo, SeatNo, Block, SeatInfo)));
-            //등급 버퍼에 좌석수 변경
-            o = GradeBuffer.pop(GradeBuffer.search(SeatGrade));
-            --o.MyCnt;
-    
-            //화면변경
-            fnMySeatUpdate();
-    
-            return true
+
+        function EventBlockOver(me, Block) {
+            fnBlockMarkUp(Block);
+            str = parent.fnGetBlockInfo(Block);
+            me.alt = str;
+            me.title = str;
         }
-    
-        //좌석 선텍/취소 UI 설정
-        function fnSelectSeatStyle(Flag, me){
-            if (Flag == "A"){
-    
-                me.style.border = "3px solid black";
-                me.style.borderLeftColor = "Gainsboro";
-                me.style.borderRightColor = "DimGray";
-                me.style.borderTopColor = "Gainsboro";
-                me.style.borderBottomColor = "black";
-    
-            }else{
-    
-                me.style.border = "0px dashed black";
-    
-            }
+
+        //블럭 마우스 아웃 이벤트
+        function EventBlockOut(me, Block) { }
+
+        //선택된 블럭 표시
+        function fnBlockMarkUp(Block) {
+
         }
-    
-        //좌석 선택/취소
-        function fnSelectSeat(Flag, me, SeatGrade, Floor, RowNo, SeatNo, Block, SeatInfo){
-            if (Flag == "A"){
-                if (fnAddSeat(SeatGrade, Floor, RowNo, SeatNo, Block, SeatInfo)){
-                    fnSelectSeatStyle(Flag, me);
-                    fnSelectSeatStyle(Flag, me);
-                    me.value = "Y"
-                }
-            }else{
-                if (fnRemoveSeat(SeatGrade, Floor, RowNo, SeatNo, Block, SeatInfo)){
-                    fnSelectSeatStyle(Flag, me);
-                    me.value = "N"
-                }
-            }
-        }
-    
-        //가격전체보기
-        function fnSeatPrice(){
-            var url = "/Book/Lib/BookInfoXml.asp?Flag=SeatPrice&GoodsCode=24007623&PlaceCode=24000640&BizCode=WEBBR&PlaySeq=" + $F("PlaySeq");
-    
-            XmlRequest(url, fnSeatPriceCallBack);
-        }
-    
-        //가격전체보기 Callback
-        function fnSeatPriceCallBack(){
-            if(XmlHttp.readyState == 4){
-                if(XmlHttp.status == 200){
-                    var Rs = new XmlRs(XmlHttp.responseXML);
-                    var html = "";
-                    var seatgrade = "";
-                    while(!Rs.Eof()){
-                        if (seatgrade != Rs.Get("SeatGrade")){
-                            seatgrade = Rs.Get("SeatGrade");
-                            html += "<ul>";
-                            html += "<li class=\"top\">" + Rs.Get("SeatGradeName") + "</li>";
-                        }
-                        html += "<li >" + Rs.Get("PriceGradeName") + " <span class=\"price\">" + fnAddComma(Rs.Get("SalesPrice")) + "원 </span> </li>";
-    
-                        Rs.MoveNext();
-    
-                        if (Rs.Eof()){
-                            html += "</ul>";
-                        }else{
-                            if (seatgrade != Rs.Get("SeatGrade")){
-                                html += "</ul>";
-                            }
-                        }
-                    }
-                    $("AllSeatPriceList").innerHTML = html;
-                    $("AllSeatPrice").style.display = "";
-                }
-            }
-        }
-    
-        function fnWaiting(){
-    
-    
-            if($F("PlayDate") == "" || $F("PlaySeq") == ""){
-                alert('예매대기를 진행할 일자와 시간을 올바르게 선택하세요.');
-            }else{
-                var frmTicketBooking;
-                frmTicketBooking = document.createElement("form");
-                frmTicketBooking.name = "wndWaiting";
-                frmTicketBooking.action = "https://poticket.interpark.com/Ticket/Waiting/WaitingMain.asp"
-                frmTicketBooking.method = "post";
-                frmTicketBooking.target = "_top";
-                document.body.appendChild(frmTicketBooking);
-    
-                var o;
-                o = document.createElement("input");
-                o.name = "GoodsCode";
-                o.type = "hidden";
-                o.value = "24007623";
-                frmTicketBooking.appendChild(o);
-    
-                o = document.createElement("input");
-                o.name = "PlaceCode";
-                o.type = "hidden";
-                o.value = "24000640";
-                frmTicketBooking.appendChild(o);
-    
-                o = document.createElement("input");
-                o.name = "PlaySeq";
-                o.type = "hidden";
-                o.value = $F("PlaySeq");
-                frmTicketBooking.appendChild(o);
-    
-                o = document.createElement("input");
-                o.name = "PlayDate";
-                o.type = "hidden";
-                o.value = $F("PlayDate");
-                frmTicketBooking.appendChild(o);
-    
-                o = document.createElement("input");
-                o.name = "Block";
-                o.type = "hidden";
-                o.value = SelectBlock;
-                frmTicketBooking.appendChild(o);
-    
-                o = document.createElement("input");
-                o.name = "WynsCode";
-                o.type = "hidden";
-                o.value = "";
-                frmTicketBooking.appendChild(o);
-    
-                o = document.createElement("input");
-                o.name = "WynsGateID";
-                o.type = "hidden";
-                o.value = "";
-                frmTicketBooking.appendChild(o);
-    
-                frmTicketBooking.submit();
-            }
-        }
-        if(CaptchaYN=="Y") { var umkc = "10141804848096"; }
+
     </script>
-    </head>
-    
-    <body marginwidth="0" marginheight="0">
-    <!-- Google Tag Manager (noscript) // ITSERVICE-79731 -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5QCJFLB" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) // ITSERVICE-79731 -->
-    <form name="frmSeat">
-        <input type="hidden" name="SessionId" value="13EF6EE681514BF28058D011BB04826B">
-        <div class="wrap">
-            <div class="contWrap">
-                <div class="step2">
-                    <h3>두아 리파 내한공연<span>ㅣ고척스카이돔</span></h3>
-                    <div class="select">
-                        <div class="fl_l">
-                            <em>다른 관람일자 선택 :</em>
-                            <span>일자</span>
-                            <select id="PlayDate" name="PlayDate" onchange="fnCallPlaySeqUpdate()">
-                                <option value="">선택하세요!</option><option value="20241204" selected="">2024년 12월 04일(수)</option><option value="20241205">2024년 12월 05일(목)</option>
-                            </select>
-                            <span>시간</span>
-                            <select name="PlaySeq" id="PlaySeq" onchange="fnCallSeatPriceUpdate()">
-                            <option value="">선택하세요!</option><option value="001">20시 00분 </option></select>
-                        </div>
-                    </div>
-                    <div class="buy" id="divWaiting" style="display: none;"><a href="javascript:;" onclick="fnWaiting();"><img src="//ticketimage.interpark.com/TicketImage/onestop/btn_buy_waiting.gif" alt="예매대기하기"></a></div>
-                    <div class="buy" id="divWaitingNotStart" style="display:none;"><a href="javascript:fnWaitingAlert()"><img border="0" src="//ticketimage.interpark.com/TicketImage/onestop/btn_buy_waiting_02.gif"></a></div>
-                    <div class="buy" id="divWaitingEnd" style="display:none;"><a href="javascript:fnWaitingAlert()"><img border="0" src="//ticketimage.interpark.com/TicketImage/onestop/btn_buy_waiting_03.gif"></a></div>
-                </div><!-- step //-->
-    
-                <div class="seatL">
-            <a href="javascript:;" class="capchaFloating" onclick="capchaShow()" style="bottom: 2.58419px; display: none;"><img src="//ticketimage.interpark.com/TicketImage/onestop/img/2016/capcha/web/floating_btn.png" alt=""></a>
-                    <iframe id="ifrmSeatDetail" name="ifrmSeatDetail" scrolling="auto" width="658px" height="619px" marginwidth="0" marginheight="0" frameborder="no" src=""></iframe>
-                </div><!-- seatL //-->
-    
-                <div class="seatR">
-                    <div class="inner">
-    
-                        <p class="theater"><a href="javascript:;" onclick="fnSeatUpdate();"><img src="//ticketimage.interpark.com/TicketImage/onestop/btn_theater.gif" alt=""></a></p>
-                        <div class="theater_list">
-                            <h3 class="title"><img src="//ticketimage.interpark.com/TicketImage/onestop/stit_seat_03.gif" alt="좌석등급 / 잔여석 "></h3>
-                            <span class="btn"><a href="javascript:;" onclick="fnSeatPrice();"><img src="//ticketimage.interpark.com/TicketImage/onestop/btn_price_all.gif" alt="가격 전체보기"></a></span>
-                            <div class="watch_info">
-                                <div class="scrollY">
-                                    <div id="SeatGradeInfo" name="SeatGradeInfo"><div class="wrapList"><table><colgroup><col width="65%"><col width="*"></colgroup><tbody><tr id="GradeRow" name="GradeRow"><td colspan="2" id="GradeDetail" name="GradeDetail"></td></tr><tr id="GradeRow" name="GradeRow"><td><div><span class="lv" style="background:#7C68EE;"></span><span class="select" onclick="fnSwapGrade(1);"><strong>스탠딩 P석</strong> 306석</span></div></td><td class="taR">154,000원</td></tr><tr><td colspan="2" id="GradeDetail" name="GradeDetail" seatgrade="1" seatgradename="스탠딩 P석" salesprice="154,000" remaincnt="306" style="display:none;"></td></tr><tr id="GradeRow" name="GradeRow"><td><div><span class="lv" style="background:#1CA814;"></span><span class="select" onclick="fnSwapGrade(2);"><strong>스탠딩 R석</strong> 237석</span></div></td><td class="taR">143,000원</td></tr><tr><td colspan="2" id="GradeDetail" name="GradeDetail" seatgrade="2" seatgradename="스탠딩 R석" salesprice="143,000" remaincnt="237" style="display:none;"></td></tr><tr id="GradeRow" name="GradeRow"><td><div><span class="lv" style="background:#17B3FF;"></span><span class="select" onclick="fnSwapGrade(3);"><strong>지정석 P석</strong> 1석</span></div></td><td class="taR">176,000원</td></tr><tr><td colspan="2" id="GradeDetail" name="GradeDetail" seatgrade="3" seatgradename="지정석 P석" salesprice="176,000" remaincnt="1" style="display:none;"></td></tr><tr id="GradeRow" name="GradeRow"><td><div><span class="lv" style="background:#FB7E4E;"></span><span class="select" onclick="fnSwapGrade(4);"><strong>지정석 R석</strong> 0석</span></div></td><td class="taR">165,000원</td></tr><tr><td colspan="2" id="GradeDetail" name="GradeDetail" seatgrade="4" seatgradename="지정석 R석" salesprice="165,000" remaincnt="0" style="display:none;"></td></tr><tr id="GradeRow" name="GradeRow"><td><div><span class="lv" style="background:#A0D53F;"></span><span class="select" onclick="fnSwapGrade(5);"><strong>지정석 S석</strong> 0석</span></div></td><td class="taR">143,000원</td></tr><tr><td colspan="2" id="GradeDetail" name="GradeDetail" seatgrade="5" seatgradename="지정석 S석" salesprice="143,000" remaincnt="0" style="display:none;"></td></tr><tr id="GradeRow" name="GradeRow"><td><div><span class="lv" style="background:#FFCF23;"></span><span class="select" onclick="fnSwapGrade(6);"><strong>지정석 A석</strong> 0석</span></div></td><td class="taR">132,000원</td></tr><tr><td colspan="2" id="GradeDetail" name="GradeDetail" seatgrade="6" seatgradename="지정석 A석" salesprice="132,000" remaincnt="0" style="display:none;"></td></tr><tr id="GradeRow" name="GradeRow"><td><div><span class="lv" style="background:#FF238F;"></span><span class="select" onclick="fnSwapGrade(7);"><strong>지정석 B석</strong> 0석</span></div></td><td class="taR">121,000원</td></tr><tr><td colspan="2" id="GradeDetail" name="GradeDetail" seatgrade="7" seatgradename="지정석 B석" salesprice="121,000" remaincnt="0" style="display:none;"></td></tr></tbody></table></div></div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- theater_list //-->
-                        <div class="seat_select1">
-                            <h3 class="title"><img src="//ticketimage.interpark.com/TicketImage/onestop/stit_seat_02.gif" alt="선택좌석"></h3>
-                            <span class="ea">총&nbsp;<span id="SelectedSeatCount" name="SelectedSeatCount">0</span>석 선택되었습니다.</span>
-                            <div class="seat_choice">
-                                <table class="seat1">
-                                    <colgroup><col width="75px"><col width="*"></colgroup>
-                                    <tbody><tr><th>좌석등급</th><td>좌석번호</td></tr></tbody>
-                                </table>
-                                <div class="choice">
-                                    <div class="scrollY">
-                                        <div id="SelectedSeat" name="SelectedSeat"><table class="seat2"><colgroup><col width="75px"><col width="*"></colgroup><tbody></tbody></table></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-    
-                        <div class="btnWrap">
-                            <a href="javascript:fnSelect();" class="kcl-user-action" kcl-action="click" kcl-code="32990"><img id="NextStepImage" src="http://ticketimage.interpark.com/TicketImage/onestop/btn_seat_confirm.gif" alt="좌석선택완료"></a>
-                            <p class="fl_l"><a href="javascript:fnCancel();" class="kcl-user-action" kcl-action="click" kcl-code="32980"><img src="//ticketimage.interpark.com/TicketImage/onestop/btn_seat_prev.gif" alt="이전단계"></a></p>
-                            <p class="fl_r"><a href="javascript:fnRefresh();" class="kcl-user-action" kcl-action="click" kcl-code="32320"><img src="//ticketimage.interpark.com/TicketImage/onestop/btn_seat_again.gif" alt="좌석 다시 선택"></a></p>
-                            <p class="last" id="divWaiting1" style="display: none;"><a href="javascript:;" onclick="fnWaiting();"><img src="//ticketimage.interpark.com/TicketImage/onestop/btn_buy_waiting2.gif" alt="예매대기하기"></a></p>
-                        </div>
-                        <div class="matter" onmouseover="showlayernormalclick('lay_matter');" onmouseout="showlayernormalclick('lay_matter');">
-                            <img src="//ticketimage.interpark.com/TicketImage/onestop/icon_matter.gif" alt="유의사항">좌석 선택시 유의사항
-                        </div>
-                    </div>
-                </div><!-- seatR //-->
-            </div><!-- contWrap //-->
-            <div style="display: none;" id="lay_matter" class="layerWrap">
-                선택하신 좌석이 동시에 다른<br>고객님으로 인해 선점 될 수 있습니다.<br>좌석선택완료이후 7분이내 결제가<br>이루어지지 않을 시 해당<br>좌석선점기회를 잃게됩니다.
-            </div>
-            <div id="AllSeatPrice" style="display: none;">
-                <div class="layerWrap" id="price">
-                    <div class="cost">
-                        <h4 class="title1">가격전체보기</h4>
-                        <span class="btn"><a href="javascript:;" onclick="$('AllSeatPrice').style.display='none';"><img src="//ticketimage.interpark.com/TicketImage/onestop/cost_close.gif" alt="닫기"></a></span>
-                        <p class="title2">두아 리파 내한공연</p>
-                        <div class="seat">
-                            <p class="title3">좌석별 할인은 다음단계에서 선택해주세요. <br>
-                                이 단계에서는 좌석위치만 선택합니다.</p>
-                            <div id="AllSeatPriceList"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- 가격전체보기 //-->
-    
-        </div>
-    
-    </form>
-    <iframe id="ifrmInfo" name="ifrmInfo" scrolling="no" width="0px" height="0px" marginwidth="0" marginheight="0" frameborder="no" src=""></iframe>
-    <form id="frmInfo" name="frmInfo" action="/Book/Lib/BookInfo.asp" method="post" target="ifrmInfo">
-        <input type="hidden" name="Flag" value="">
-        <input type="hidden" name="GoodsCode" value="24007623">
-        <input type="hidden" name="PlaceCode" value="24000640">
-        <input type="hidden" name="PlaySeq">
-        <input type="hidden" name="AdditionalYN">
-        <input type="hidden" name="SessionId" value="13EF6EE681514BF28058D011BB04826B">
-        <input type="hidden" name="SeatCnt">
-        <input type="hidden" name="SeatGrade">
-        <input type="hidden" name="Floor">
-        <input type="hidden" name="RowNo">
-        <input type="hidden" name="SeatNo">
-        <input type="hidden" id="InterlockingGoods" name="InterlockingGoods" value="">
-        
-        <input type="hidden" id="CTCYN" name="CTCYN" value="Y">
-        
-    </form>
-    <div id="divRecaptchaWrap" style="width: 100%; height: 100%; position: absolute; z-index: 100; background: rgb(0, 0, 0); top: 0px; left: 0px; opacity: 0.7; display: none;"></div>
-    <div id="divRecaptcha_v2" class="capchaLayer" style="display:none;"></div>
-    <script src="https://www.google.com/recaptcha/enterprise.js"></script>
-    <script type="text/javascript">
-        var reCaptchaShow = function (action) {
-            if(!j$("#divRecaptchaWrap").is(':visible')) {
-                j$("#divRecaptcha_v2, #divRecaptchaWrap").show();
-                try {
-                    var r = grecaptcha.enterprise.getResponse();
-                    grecaptcha.enterprise.reset();
-                } catch (err) {
-                    grecaptcha.enterprise.render('divRecaptcha_v2', {
-                        'sitekey': '6Lf0kIIpAAAAAEtyIjCB0tpvGmF_UMCE5r3VVvnG',
-                        'action': action,
-                        'callback': function (response) {
-                            j$.ajax({
-                                url: "/Book/Lib/CaptchaCallback.asp",
-                                type: "post",
-                                data: { 'g': '24007623', 's': '13EF6EE681514BF28058D011BB04826B', 'u': window.location.href, 'r' : response },
-                                async: false,
-                                success: function (e) {
-                                    if (e.toLowerCase() == "false") {
-                                        j$("#divRecaptcha_v2, #divRecaptchaWrap").hide();
-                                        fnRefresh();
-                                    } else {
-                                        grecaptcha.enterprise.reset();
-                                    }
-                                }
-                            });
-                        }
-                    });
-                }
-            }
-        };
-    </script>
-    <script type="text/javascript" src="/Book/Inc/Js/Captcha.js?v=2023071014"></script>
-    <script type="text/javascript" src="/Book/Inc/Js/captchatts.js?v=201708161000"></script>
-    <script type="text/javascript" src="/Book/Inc/Js/slidercaptcha.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="//ticketimage.interpark.com/TicketImage/onestop/css/sliderCaptcha.css">
-    <div id="divRecaptcha" class="capchaLayer" style="display: none;">
-        <div class="capchaInner">
-            <div class="capchaImg">
-                <img id="imgCaptcha" src="data:image/jpeg;base64,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" style="display: block; top: 24px; left: 37px;">
-                <a href="javascript:;" class="refreshBtn" onclick="fnCapchaRefresh()"></a>
-                <a href="javascript:;" class="voiceBtn" onclick="javascript:return playAudio();" id="CaptchaTts">
-                    <span>문자입력 음성</span>
-                </a>
-            </div>
-            <div id="soundPlay" style="display:none;"></div>
-            <div class="validationTxt txtSet">
-                <span style="top: 6px;">문자를 입력해주세요</span>
-                <input type="text" id="txtCaptcha" name="txtCaptcha" value="" maxlength="8" onkeydown="IsEnterGo();" style="text-transform: uppercase; display: none;">
-                <div class="alertNotice">새로운 문자로 다시 인증해주세요</div>
-            </div>
-            <div class="capchaBtns">
-                <a href="javascript:;" onclick="SelDateChange()">날짜 다시 선택</a>
-                <a href="javascript:;" onclick="fnCheck()">입력완료</a>
-            </div>
-        </div>
-        
-        <div id="divCaptchaFolding" class="capchaFolding">
-            좌석 먼저 보고 입력하려면, <a href="javascript:;" onclick="capchaHide()">잠깐 접어두기&nbsp;&nbsp;</a>
-        </div>
-        
-    </div>
-    <div class="captchSliderLayer" style="display: none;">
-        <div class="captchSliderInner">
-            <div class="captchSliderTitle">
-                <span class="badge">안심예매</span>
-                <h2>슬라이더를 밀어 퍼즐을 맞춰주세요</h2>
-                <p>퍼즐이 일치하면 좌석을 선택할 수 있습니다.</p>
-            </div>
-            <div class="captchSliderArea">
-                <div id="captchSlider"></div>
-            </div>
-        </div>
-    </div>
-    
-    <input type="hidden" id="rcckYN" name="rcckYN" value="Y">
-    <input type="hidden" id="hidCaptcha" name="hidCaptcha" value="Uxw3yDMUrVAMfG7fjxbcntdAgb+jqEuYqdPKG7Zhqy4=">
-    <script type="text/javascript">
-        var vAPIDN="poticket.interpark.com";
-        var vERKYN="Y";
-        var vERKYT="";
-        var vMsgGuide="※ 안심예매 보안문자 입력 오류.\n\n1. 쿠키관련 설정\n- Internet Explorer - 도구 - 인터넷옵션 - 개인정보 - 고급 - 쿠키 - 자동으로 쿠키 처리 안 함 선택\n > 현재 사이트의 쿠키 허용\n > 링크된 사이트의 쿠키 허용\n > 항상 세션에 쿠키 허용\n\n2. 신뢰할 수 있는 사이트 등록\n- Internet Explorer - 도구 - 인터넷 옵션 - 보안 - 신뢰할 수 있는 사이트 선택 - 사이트 클릭\n > 영역에 웹 사이트 추가 : ticket.interpark.com\n\n* 메뉴명은 브라우저 버전마다 차이가 있을 수 있습니다.\n* 옵션 설정 후 PC를 재시작해 주시기 바랍니다.";
-    
-            capchaInit();
-            capchaShow();
-            
-    </script>
-    
-    <script type="text/javascript">
-        try {
-    
-            var Category2DMap = {
-              '00000': '알 수 없음',
-              '15101': '테마파크/놀이공원',
-              '15102': '워터파크/수영장/스파',
-              '15104': '놀이/체험/기타',
-              '15105': '레포츠',
-              '15106': '스키/눈썰매',
-              '15108': '선박/크루즈',
-              '15109': '골프부킹',
-              '15110': '캠핑/휴양림',
-              '15111': '골프',
-              '15112': '마라톤',
-              '15113': '제주도',
-              '03002': 'Rock/메탈',
-              '03003': '재즈/블루스',
-              '03004': '발라드',
-              '03005': '댄스',
-              '03006': '팬미팅',
-              '03007': '기타',
-              '03008': '랩/힙합',
-              '03012': '콘서트',
-              '03013': '포크/트로트',
-              '03014': '뉴에이지',
-              '03016': '파티',
-              '03017': '내한공연',
-              '03018': '개그/마술콘서트',
-              '03019': '디너쇼',
-              '03020': '인디',
-              '03021': 'J-Pop',
-              '03022': '탱고',
-              '03023': '토크/강연',
-              '03024': '페스티벌',
-              '03025': '팬클럽',
-              '04008': '오페라',
-              '04009': '가족극/아동극',
-              '04010': '클래식',
-              '05001': '발레/무용',
-              '05003': '국악',
-              '05008': '가족극/아동극',
-              '07001': '야구',
-              '07002': '축구',
-              '07003': '농구',
-              '07004': '배구',
-              '07005': '이종격투기',
-              '07006': '스포츠이벤트',
-              '07008': '골프대회',
-              '07030': 'F1',
-              '07032': 'E스포츠',
-              '07033': '리얼야구존',
-              '07094': '차량번호',
-              '08002': '전시',
-              '08007': '행사/축제',
-              '08009': '아동체험전',
-              '08011': '특정공연장',
-              '08012': '특정공연',
-              '08013': '뮤지엄',
-              '08014': '아카데미',
-              '08015': '클래스',
-              '09001': '리미티드런 연극',
-              '09003': '악극',
-              '09004': '마임',
-              '09007': '가족극/아동극',
-              '09009': '스테디셀러 연극',
-              '11001': '기타 뮤지컬',
-              '11005': '아동/가족극',
-              '11007': '오리지널/내한공연',
-              '11008': '라이선스',
-              '11009': '창작뮤지컬',
-              '11010': '넌버벌 퍼포먼스',
-              '14001': '관심장르',
-              '14002': '관심세부장르',
-              '14003': '관심예술인',
-              '14004': '콘도',
-              '15001': '전체',
-              '15002': 'WEB+콜',
-              '15003': 'WEB only',
-              '15100': '동/식물원',
-            };
-    
-            var subCategory = Category2DMap["03017"] || Category2DMap["00000"]
-    
-            parent.dataLayer.push({
-                user_id: getCookie("tempinterparkGUEST") || '',    // tempInterparkGuest 쿠키 값
-                category_1: '티켓',                   // 티켓 고정
-                category_2: "콘서트",       // 장르
-                category_3: '국내',                   // 국내 고정
-                type: 'order',                        // 예매완료 페이지만 'orderComplete', 나머진 'order' 고정
-                version: '190001',                    // 190001 고정
-                object_id: "24007623", // 상품코드
-            })
-    
-            parent.dataLayer.push({
-                event: 'screen_view',
-                parameters: {
-                  screen_name: "좌석선택", // 날짜/회차선택, 좌석선택, 가격선택, 결제, 예매완료
-                  screen_class: document.location.href,
-                  page_title: "좌석선택", // 날짜/회차선택, 좌석선택, 가격선택, 결제, 예매완료
-                  page_location: document.location.href,
-                },
-            })
-    
-            parent.dataLayer.push({
-              event: 'begin_checkout',
-              parameters: {
-                currency: 'KRW',
-                value: '0',                   // 고정
-                persons: '0',                 // 고정
-                items: [
-                  {
-                    item_id: "24007623",         // 상품코드
-                    item_name: "두아 리파 내한공연",       // 상품명
-                    item_brand: '',                                       // 빈값 고정
-                    item_category: "티켓>콘서트>" + subCategory,                // 티켓/장르/서브장르
-                    item_region: "고척스카이돔",     // 공연장명
-                    item_variant: '',                                     // 고정
-                    item_option_id: '',                                   // 고정
-                    quantity: '0',                                        // 고정
-                    price: '0',                                           // 고정
-                    schedule: "20241204",   // 선택 날짜
-                    days_night: '',                                       // 고정
-                    lead_time: '126',                                        // 고정
-                    item_review: '',                                      // 고정
-                    item_option: '',                                      // 고정
-                  },
-                ],
-              },
-          });
-        } catch (err) {
-          console.log("[GA4] %o", err)
+    <script type="text/javascript" src="/Book/Inc/js/block.js"></script>
+    <style type="text/css">
+        .SeatT {
+            background-color: white;
+            width: 60px;
+            height: 10px;
+            font-size: 7pt;
+            clear: left;
+            float: left;
+            padding: 0 10 0 0;
         }
-    </script>
-    
-    
-    <script type="text/javascript">
-    
-    
-        function fnAlertNotMatch(){
-            alert("선택하신 공연일과 회차의 예매 가능시간이 종료되었습니다.\n공연일과 회차를 다시 선택해주세요.");
+
+        .SeatR {
+            background-color: whitesmoke;
+            width: 10px;
+            height: 10px;
+            margin: 1px;
+            padding: 0 0 0 0;
+            display: inline-block;
         }
-    </script>
-    </body></html>
-    
+
+        .SeatB {
+            background-color: white;
+            width: 10px;
+            height: 1px;
+            margin: 1px;
+            padding: 0 0 0 0;
+            display: inline-block;
+        }
+
+        .SeatN {
+            width: 10px;
+            height: 10px;
+            margin: 1px;
+            padding: 0 0 0 0;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .SeatN_Daegu {
+            width: 30px;
+            height: 30px;
+            margin: 3px;
+            padding: 0 0 0 0;
+            display: inline-block;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body leftmargin="0" topmargin="0" onload="fnInit()" marginwidth="0" marginheight="0">
+    <table width="100%" height="100%" cellpadding="0" cellspacing="0" id="TmgsTable" name="TmgsTable">
+        <tbody>
+            <tr>
+
+                <td valign="top" style="padding:20px" nowrap="true">
+                    <div id="divSeatBox"
+                        style="border:3px solid #ccc; height:100%; font-family:&quot;malgun gothic&quot;; font-weight:bold;font-size:20px;">
+                        <table width="600px" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                                <tr>
+                                    <td width="4" height="4"><img
+                                            src="//ticketimage.interpark.com/TicketImage/event/061227/seat_nt_left_01.gif"
+                                            width="4" height="4"></td>
+                                    <td height="4"
+                                        background="http://ticketimage.interpark.com/TicketImage/event/061227/seat_nt_top.gif">
+                                    </td>
+                                    <td width="4" height="4"><img
+                                            src="//ticketimage.interpark.com/TicketImage/event/061227/seat_nt_right_01.gif"
+                                            width="4" height="4"></td>
+                                </tr>
+                                <tr>
+                                    <td width="4"
+                                        background="http://ticketimage.interpark.com/TicketImage/event/061227/seat_nt_left_bg.gif">
+                                    </td>
+                                    <td bgcolor="#EBEBEB"><img
+                                            src="//ticketimage.interpark.com/TicketImage/event/061227/dot_03.gif"
+                                            width="5" height="5" align="absmiddle"> <b>
+                                            <font color="#3300FF">511 영역</font>의 좌석배치도입니다
+                                        </b></td>
+                                    <td width="4"
+                                        background="http://ticketimage.interpark.com/TicketImage/event/061227/seat_nt_right_bg.gif">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="4" height="4"><img
+                                            src="//ticketimage.interpark.com/TicketImage/event/061227/seat_nt_left_02.gif"
+                                            width="4" height="4"></td>
+                                    <td height="4"
+                                        background="http://ticketimage.interpark.com/TicketImage/event/061227/seat_nt_bottom.gif">
+                                    </td>
+                                    <td width="4" height="4"><img
+                                            src="//ticketimage.interpark.com/TicketImage/event/061227/seat_nt_right_02.gif"
+                                            width="4" height="4"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table width="600" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                                <tr>
+                                    <td height="10"></td>
+                                </tr>
+                                <tr>
+                                    <td><img src="http://ticketimage.interpark.com/TicketImage/onestop/html/default.gif"
+                                            onerror="javascript:this.src='http://ticketimage.interpark.com/TicketImage/onestop/html/default.gif'">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br>
+                        <span class="SeatT" align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><br><span class="SeatT"
+                            align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><br><span class="SeatT"
+                            align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><br><span class="SeatT"
+                            align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats"
+                            style="background-color: rgb(28, 168, 20); border-width: 3px; border-style: solid; border-color: gainsboro dimgray black gainsboro; border-image: initial;"
+                            title="[스탠딩 R석] -C구역 입장번호-155"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','155','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><br><span class="SeatT"
+                            align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-166"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','166','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-170"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','170','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatN" id="Seats" name="Seats" style="background-color:#1CA814;"
+                            title="[스탠딩 R석] -C구역 입장번호-172"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','172','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-173"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','173','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-174"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','174','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-177"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','177','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-187"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','187','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-196"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','196','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><br><span class="SeatT" align="left"
+                            style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-205"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','205','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-215"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','215','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatN" id="Seats" name="Seats" style="background-color:#1CA814;"
+                            title="[스탠딩 R석] -C구역 입장번호-217"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','217','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-218"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','218','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-219"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','219','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-220"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','220','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-221"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','221','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-230"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','230','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><br><span class="SeatT" align="left"
+                            style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-245"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','245','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-248"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','248','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-256"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','256','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatN" id="Seats" name="Seats" style="background-color:#1CA814;"
+                            title="[스탠딩 R석] -C구역 입장번호-258"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','258','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-266"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','266','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-278"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','278','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><br><span class="SeatT" align="left"
+                            style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-283"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','283','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-288"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','288','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-289"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','289','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-300"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','300','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-312"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','312','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-316"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','316','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><br><span class="SeatT" align="left"
+                            style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-323"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','323','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-331"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','331','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-332"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','332','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-337"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','337','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-338"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','338','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-339"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','339','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-340"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','340','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-341"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','341','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-342"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','342','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-343"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','343','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatN" id="Seats" name="Seats" style="background-color:#1CA814;"
+                            title="[스탠딩 R석] -C구역 입장번호-345"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','345','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-353"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','353','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-354"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','354','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-355"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','355','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-360"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','360','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><br><span class="SeatT" align="left"
+                            style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-365"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','365','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-375"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','375','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatN" id="Seats" name="Seats" style="background-color:#1CA814;"
+                            title="[스탠딩 R석] -C구역 입장번호-377"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','377','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-378"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','378','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-383"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','383','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-384"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','384','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-385"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','385','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-391"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','391','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-392"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','392','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-393"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','393','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-396"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','396','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><br><span class="SeatT" align="left"
+                            style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-406"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','406','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-416"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','416','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-417"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','417','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-418"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','418','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-419"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','419','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-420"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','420','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-423"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','423','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-424"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','424','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-428"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','428','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-429"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','429','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-430"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','430','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-431"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','431','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatN" id="Seats" name="Seats" style="background-color:#1CA814;"
+                            title="[스탠딩 R석] -C구역 입장번호-433"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','433','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-439"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','439','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><br><span
+                            class="SeatT" align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-445"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','445','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-446"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','446','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatN" id="Seats" name="Seats" style="background-color:#1CA814;"
+                            title="[스탠딩 R석] -C구역 입장번호-448"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','448','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-449"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','449','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-450"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','450','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-454"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','454','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-461"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','461','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-462"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','462','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-463"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','463','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatN" id="Seats" name="Seats" style="background-color:#1CA814;"
+                            title="[스탠딩 R석] -C구역 입장번호-465"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','465','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatN" id="Seats" name="Seats" style="background-color:#1CA814;"
+                            title="[스탠딩 R석] -C구역 입장번호-467"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','467','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-468"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','468','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-469"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','469','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-470"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','470','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-471"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','471','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-472"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','472','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-475"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','475','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><br><span class="SeatT"
+                            align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-483"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','483','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-488"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','488','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-491"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','491','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-492"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','492','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-493"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','493','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-496"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','496','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-497"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','497','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span class="SeatN" id="Seats"
+                            name="Seats" style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-511"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','511','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-512"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','512','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatN" id="Seats" name="Seats" style="background-color:#1CA814;"
+                            title="[스탠딩 R석] -C구역 입장번호-514"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','514','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><br><span class="SeatT" align="left"
+                            style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><br><span class="SeatT"
+                            align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><br><span class="SeatT"
+                            align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><br><span class="SeatT"
+                            align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><br><span class="SeatT"
+                            align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><br><span class="SeatT"
+                            align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><br><span class="SeatT"
+                            align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><br><span class="SeatT"
+                            align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><br><span class="SeatT"
+                            align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatN" id="Seats" name="Seats"
+                            style="background-color:#1CA814;" title="[스탠딩 R석] -C구역 입장번호-860"
+                            onclick="SelectSeat(this,'2','','C구역 입장번호','860','511','스탠딩 R석')" value="N" seatinfo=""
+                            rowidx="0" colidx="0" limitcnt="0"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><br><span class="SeatT" align="left"
+                            style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><br><span class="SeatT"
+                            align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><br><span class="SeatT"
+                            align="left" style="width:100px; padding-left:5px">
+                            <font style="font-size:8pt;color:#636363" face="굴림" align="left">C구역 입장번호</font>
+                        </span><span style="width:5;height=9px;font-size:7pt" align="center"></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span><span
+                            class="SeatR"><!----></span><span class="SeatR"><!----></span>
+                    </div><!-- HTML -->
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+</body>
+
+</html>
