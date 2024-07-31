@@ -11,3 +11,8 @@ pyperclip==1.9.0
 selenium==4.9.0  
 webdriver-manager==4.0.1
 chromedriver_autoinstaller==0.6.4
+
+# ocr
+easyocr==1.7.1
+torch==2.3.1  
+torchvision==0.18.1  
