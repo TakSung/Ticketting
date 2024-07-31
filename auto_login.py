@@ -89,14 +89,12 @@ driver.implicitly_wait(10)
 # 좌석등급 선택
 driver.find_element(By.XPATH,'//*[@id="GradeRow"]/td[1]/div/span[2]').click()
 
-while True:
-    # 세부 구역 선택
-    driver.find_element(By.XPATH,'//*[@id="GradeDetail"]/div/ul/li[1]/a').click()
-    
-    # 좌석선택 아이프레임으로 이동
+def click_GradeDetail(li_num:int):
+    driver.find_element(By.XPATH,f'//*[@id="GradeDetail"]/div/ul/li[{li_num}]/a').click()
     driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeatDetail"]'))
     
     # 좌석이 있으면 좌석 선택
+#%%
     try:
         driver.find_element(By.XPATH,'//*[@id="Seats"]').click()
         # 결제 함수 실행
