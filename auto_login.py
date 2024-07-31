@@ -1,16 +1,20 @@
 #%%
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
 import chromedriver_autoinstaller
-import subprocess
-import requests
-import pandas as pd
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import Select
 from bs4 import BeautifulSoup as bs
+from datetime import datetime
+import subprocess
 import time
 import easyocr
+# import pandas as pd
+# import requests
 #%%
 # 크롬 열기
+
 reader = easyocr.Reader(['en'])
 subprocess.Popen(r'C:\Program Files\Google\Chrome\Application\chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\chrometemp"') # 디버거 크롬 구동
 
@@ -24,40 +28,40 @@ try:
 except:
     chromedriver_autoinstaller.install(True)
     driver = webdriver.Chrome(f'./{chrome_ver}/chromedriver.exe', options=option)
+# 브라우저 사이즈
+driver.set_window_size(1900, 1000)
 driver.implicitly_wait(10)
 # %%
-# 인터파크로 들어가기
-driver.get("https://tickets.interpark.com/goods/24007623")
+# 인터파크 들어가기
+
+driver.get(url='https://tickets.interpark.com/goods/24007623')
 time.sleep(1)
 driver.implicitly_wait(10)
 
+# # 로그인 하기
+# driver.find_element(By.XPATH, '/html/body/div[1]/div/header/div[2]/div[1]/div/div[2]/a[1]').click()
+
+# # 로그인 하기
+# driver.find_element(By.XPATH, '/html/body/div[1]/div/header/div[2]/div[1]/div/div[2]/a[1]').click()
+
 # %%
-#driver.switch_to.window(driver.window_handles[0])
-time.sleep(1)
+# 좌석 예약 클릭하기
+driver.find_element(By.XPATH,'//*[@id="productSide"]/div/div[2]/a[1]').click()
+time.sleep(0.5)
 driver.implicitly_wait(10)
 
-driver.find_element(By.XPATH, '//*[@id="productSide"]/div/div[2]/a[1]').click()
-driver.implicitly_wait(10)
-
-#%%
-# 새로운 탭으로 이동
-print(driver.window_handles)
+# %%
+# 좌석 예약 창으로 변경
 driver.switch_to.window(driver.window_handles[-1])
-# driver.implicitly_wait(10)
-
-# # 아이프레임으로 이동
-# driver.implicitly_wait(10)
 driver.switch_to.frame(driver.find_element(By.XPATH, "//*[@id='ifrmSeat']"))
-
-# %%
-# 부정예매방지문자 OCR 생성
-
-# 부정예매방지 문자 이미지 요소 선택
-capchaPng = driver.find_element(By.XPATH,'//*[@id="imgCaptcha"]')
 driver.implicitly_wait(10)
 
-# 부정예매방지문자 입력
+# %%
+# 캡챠 풀기
+capchaPng = driver.find_element(By.XPATH,'//*[@id="imgCaptcha"]')
+
 while capchaPng:
+    print('---------------capcha')
     result = reader.readtext(capchaPng.screenshot_as_png, detail=0)
     capchaValue = result[0].replace(' ', '').replace('5', 'S').replace('0', 'O').replace('$', 'S').replace(',', '')\
         .replace(':', '').replace('.', '').replace('+', 'T').replace("'", '').replace('`', '')\
@@ -71,39 +75,51 @@ while capchaPng:
     #입력완료 버튼 클릭
     driver.find_element(By.XPATH,'//*[@id="divRecaptcha"]/div[1]/div[4]/a[2]').click()
 
-	# 입력이 잘 됐는지 확인하기
     display = driver.find_element(By.XPATH,'//*[@id="divRecaptcha"]').is_displayed()
-    # 입력 문자가 틀렸을 때 새로고침하여 다시입력
     if display:
+        # 새로고침
         driver.find_element(By.XPATH,'//*[@id="divRecaptcha"]/div[1]/div[1]/a[1]').click()
-    # 입력 문자가 맞으면 select 함수 실행
     else:
         break
 # %%
-# 좌석 탐색
-print(driver.window_handles)
+# 좌석 선택하기
+print('******************************select seat')
 driver.switch_to.window(driver.window_handles[-1])
 driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
-driver.implicitly_wait(10)
 
-# 좌석등급 선택
-driver.find_element(By.XPATH,'//*[@id="GradeRow"]/td[1]/div/span[2]').click()
 
+# %%
+# 구역(GradeRow) 클릭하기
+def click_GradeRow(tr_num:int):
+    '''_summary_
+    precondition : 프레임이 [@id="ifrmSeat"] 으로 되어있어야함
+    Args: 0<=tr_num<n
+    '''
+    driver.find_elements(By.XPATH,'//*[@id="GradeRow"]/td[1]/div/span[2]')[tr_num].click()
+    driver.implicitly_wait(10)
+click_GradeRow(tr_num=1)
+
+# %%
+# 세부구역(GradeDetail) 클릭하기
 def click_GradeDetail(li_num:int):
+    '''_summary_
+    precondition : 프레임이 [@id="ifrmSeat"] 으로 되어있어야함
+    Args: 1<=li_num<n
+    '''
     driver.find_element(By.XPATH,f'//*[@id="GradeDetail"]/div/ul/li[{li_num}]/a').click()
-    driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeatDetail"]'))
-    
-    # 좌석이 있으면 좌석 선택
-#%%
-    try:
-        driver.find_element(By.XPATH,'//*[@id="Seats"]').click()
-        # 결제 함수 실행
-        break
-        
-    # 좌석이 없으면 다시 조회
-    except:
-        print('******************************다시선택')
-        driver.switch_to.default_content()
-        driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
-        driver.find_element(By.XPATH,'/html/body/form[1]/div/div[1]/div[3]/div/p/a/img').click()
-        time.sleep(1)
+    driver.implicitly_wait(10)
+click_GradeDetail(li_num=1)
+
+# %%
+## 좌석선택하기
+# try:
+driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeatDetail"]'))
+#     driver.find_element(By.XPATH,'//*[@id="Seats"]').click()
+# except:
+#     print('******************************다시선택')
+#     driver.switch_to.default_content()
+#     driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
+#     driver.find_element(By.XPATH,'/html/body/form[1]/div/div[1]/div[3]/div/p/a/img').click()
+#     time.sleep(1)     
+
+# %%
