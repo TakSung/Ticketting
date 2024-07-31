@@ -84,21 +84,39 @@ print('******************************select seat')
 driver.switch_to.window(driver.window_handles[-1])
 driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
 
-# %%
-# 구역선택
-driver.find_element(By.XPATH,'//*[@id="GradeRow"]/td[1]/div/span[2]').click()
-driver.implicitly_wait(10)
 
 # %%
-# 세부구역 선택
-driver.find_element(By.XPATH,'//*[@id="GradeDetail"]/div/ul/li[1]/a').click()
+# 구역(GradeRow) 클릭하기
+def click_GradeRow(tr_num:int):
+    '''_summary_
+    precondition : 프레임이 [@id="ifrmSeat"] 으로 되어있어야함
+    Args: 0<=tr_num<n
+    '''
+    driver.find_elements(By.XPATH,'//*[@id="GradeRow"]/td[1]/div/span[2]')[tr_num].click()
+    driver.implicitly_wait(10)
+click_GradeRow(tr_num=1)
+
+# %%
+# 세부구역(GradeDetail) 클릭하기
+def click_GradeDetail(li_num:int):
+    '''_summary_
+    precondition : 프레임이 [@id="ifrmSeat"] 으로 되어있어야함
+    Args: 1<=li_num<n
+    '''
+    driver.find_element(By.XPATH,f'//*[@id="GradeDetail"]/div/ul/li[{li_num}]/a').click()
+    driver.implicitly_wait(10)
+click_GradeDetail(li_num=1)
+
+# %%
+## 좌석선택하기
+# try:
 driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeatDetail"]'))
-try:
-    driver.find_element(By.XPATH,'//*[@id="Seats"]').click()
-except:
-    print('******************************다시선택')
-    driver.switch_to.default_content()
-    driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
-    driver.find_element(By.XPATH,'/html/body/form[1]/div/div[1]/div[3]/div/p/a/img').click()
-    time.sleep(1)     
+#     driver.find_element(By.XPATH,'//*[@id="Seats"]').click()
+# except:
+#     print('******************************다시선택')
+#     driver.switch_to.default_content()
+#     driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
+#     driver.find_element(By.XPATH,'/html/body/form[1]/div/div[1]/div[3]/div/p/a/img').click()
+#     time.sleep(1)     
+
 # %%
