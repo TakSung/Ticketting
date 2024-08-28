@@ -34,20 +34,49 @@ driver.implicitly_wait(10)
 # %%
 # 인터파크 들어가기
 
-driver.get(url='https://tickets.interpark.com/goods/24011164')
+driver.get(url='https://tickets.interpark.com/goods/24012225')
 time.sleep(1)
 driver.implicitly_wait(10)
 
-# # 로그인 하기
-# driver.find_element(By.XPATH, '/html/body/div[1]/div/header/div[2]/div[1]/div/div[2]/a[1]').click()
-
-# # 로그인 하기
-# driver.find_element(By.XPATH, '/html/body/div[1]/div/header/div[2]/div[1]/div/div[2]/a[1]').click()
-
 # %%
+def get_server_time():
+    # 서버 시간을 가져오는 함수
+    time_element = driver.find_element(By.XPATH , '//*[@id="productSide"]/div/div[2]/a[1]/span')
+    return time_element.text
+    
+# %%
+target_time = "예매하기"
+def wait_for_target_time(target_time):
+    while True:
+        current_time = get_server_time()
+        if current_time == target_time:
+            break
+        time.sleep(0.1) 
+# %%
+import re
+
+def time_to_seconds(time_string):
+    # 정규식을 이용해 "xx:xx" 패턴을 찾음
+    pattern = r"남은시간 (\d+):(\d+)"
+    match = re.match(pattern, time_string)
+    
+    if match:
+        minutes = int(match.group(1))  # 첫 번째 그룹은 분
+        seconds = int(match.group(2))  # 두 번째 그룹은 초
+        total_seconds = minutes * 60 + seconds
+        return total_seconds
+    else:
+        raise ValueError("시간 형식이 올바르지 않습니다.")
+
+# 예시
+time_string = "남은시간 00:05"
+result = time_to_seconds(time_string)
+print(result)  # 330 출력
+time.sleep(result-0.1)
 # 좌석 예약 클릭하기
+wait_for_target_time(target_time)
 driver.find_element(By.XPATH,'//*[@id="productSide"]/div/div[2]/a[1]').click()
-time.sleep(0.5)
+#time.sleep(0.5)
 driver.implicitly_wait(10)
 
 # %%
@@ -127,5 +156,7 @@ driver.implicitly_wait(10)
 #     driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
 #     driver.find_element(By.XPATH,'/html/body/form[1]/div/div[1]/div[3]/div/p/a/img').click()
 #     time.sleep(1)     
+
+
 
 # %%
