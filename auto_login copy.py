@@ -16,7 +16,12 @@ import easyocr
 # 크롬 열기
 
 reader = easyocr.Reader(['en'])
-subprocess.Popen(r'C:\Program Files\Google\Chrome\Application\chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\chrometemp"') # 디버거 크롬 구동
+# subprocess.Popen(r'C:\Program Files\Google\Chrome\Application\chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\chrometemp"') # 디버거 크롬 구동
+
+# 디버거 모드의 크롬 실행 경로 수정 (맥에서는 디폴트 설치 위치 사용)
+subprocess.Popen(['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', 
+                  '--remote-debugging-port=9222', 
+                  '--user-data-dir=/tmp/chrome_temp']) # 디버거 크롬 구동
 
 
 option = Options()
