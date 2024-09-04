@@ -34,7 +34,7 @@ driver.implicitly_wait(10)
 # %%
 # 인터파크 들어가기
 
-driver.get(url='https://tickets.interpark.com/goods/24012225')
+driver.get(url='https://tickets.interpark.com/goods/24007623')
 time.sleep(1)
 driver.implicitly_wait(10)
 
@@ -48,10 +48,14 @@ def get_server_time():
 target_time = "예매하기"
 def wait_for_target_time(target_time):
     while True:
-        current_time = get_server_time()
-        if current_time == target_time:
-            break
-        time.sleep(0.1) 
+        try:
+            current_time = get_server_time()
+            if current_time == target_time:
+                break
+        except:
+            pass
+        time.sleep(0.1)
+
 # %%
 import re
 
@@ -69,12 +73,27 @@ def time_to_seconds(time_string):
         raise ValueError("시간 형식이 올바르지 않습니다.")
 
 # 예시
-time_string = "남은시간 00:05"
-result = time_to_seconds(time_string)
-print(result)  # 330 출력
-time.sleep(result-0.1)
+# %%
+# 시간계산
+try:
+    time_string = get_server_time()
+    result = time_to_seconds(time_string)
+    print(result)  # 330 출력
+    time.sleep(result-2)
+    wait_for_target_time(target_time)
+except:
+    pass
+
+# %%
+#대기
+# while True:
+#     time_string = get_server_time()
+#     result = time_to_seconds(time_string)
+#     print(result, time_string)
+#     time.sleep(1)
+
+# %%
 # 좌석 예약 클릭하기
-wait_for_target_time(target_time)
 driver.find_element(By.XPATH,'//*[@id="productSide"]/div/div[2]/a[1]').click()
 #time.sleep(0.5)
 driver.implicitly_wait(10)
@@ -82,6 +101,7 @@ driver.implicitly_wait(10)
 # %%
 # 좌석 예약 창으로 변경
 driver.switch_to.window(driver.window_handles[-1])
+# %%
 driver.switch_to.frame(driver.find_element(By.XPATH, "//*[@id='ifrmSeat']"))
 driver.implicitly_wait(10)
 
